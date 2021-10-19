@@ -1,0 +1,49 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Time Tracker</title>
+	<link rel="stylesheet" href="./css/style.css">
+	<script src="https://kit.fontawesome.com/68e1458f78.js" crossorigin="anonymous"></script>
+</head>
+<body class='bg-neutral-300'>
+	<header class="text-center bg-neutral-900 text-light">
+		<h1>Time Tracker</h1>
+		<ul class="flex max-w-3xl mx-auto my-6">
+			<li class="flex-1"><strong>Options:</strong></li>
+			<li class="flex-1">
+				<label for="options[]">
+					<input id="show_sec" type="checkbox" value="show_seconds" name="options[]" class="opt-input" checked> Show Seconds</label>
+			</li>
+			<li class="flex-1">
+				<label for="sec_options[]">
+					<input id="seconds_dots" type="radio" value="dots" name="sec_options[]" class="opt-input"> Show Seconds As Dots</label>
+			</li>
+			<li class="flex-1">
+				<label for="sec_options[]">
+					<input id="seconds_line" type="radio" value="line" name="sec_options[]" class="opt-input" checked> Show Seconds As Line</label>
+			</li>
+			<li class="flex-1">
+				<label for="options[]">
+					<input id="hr_24" type="checkbox" value="24hr" name="options[]" class="opt-input"> 24-Hour Time</label>
+			</li>
+		</ul>
+	</header>
+	<main>
+		<article id="clock_container" class="flex flex-col items-center justify-center text-dark">
+			<h2 id="clock" class="flex-shrink-0 flex-grow-1"></h2>
+			<div id="counter" class="flex-none text-xs w-9/12 mx-8 box-border">
+				<div id="line" class="hidden bg-accent-500 h-2"></div>
+			</div>
+		</article>
+		<article id="timers_container" class="bg-neutral-700 text-light p-4">
+			<div class="timer flex-1 bg-primary-400 p-4 text-dark">
+				<h3 class="title-input"><input type="text" name="title" placeholder="Title" value="Title" class="p-2 text-center bg-primary-300"></h3>
+				<span class="play-pause inline-block m-8"><i class="fad fa-play-circle fa-10x"></i></span>
+				<p class="time">0:00</p>
+			</div>
+		</article>
+	</main>
+	<script src="./js/scripts.js"></script>
+</body>
+</html>
