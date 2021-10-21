@@ -175,18 +175,24 @@ module.exports = {
       cursor: {
         crosshair: 'crosshair',
         grab: 'grab',
+        help: 'help',
         'zoom-in': 'zoom-in',
-        'zoom-out': 'zoom-out',
-        help: 'help'
+        'zoom-out': 'zoom-out'
       }
     },
     variants: {
 	    extend: {
 	      cursor: ['hover', 'focus'],
-	      borderWidth: ['hover', 'focus']
+	      borderWidth: ['hover', 'focus'],
+	      transitionProperty: {
+	      	'width': 'width',
+	      	'height': 'height'
+	      }
 	    },
 	  },
   },
-  variants: {},
+  variants: {
+  	transitionProperty: ['responsive', 'motion-safe', 'motion-reduce']
+  },
   plugins: [],
 }

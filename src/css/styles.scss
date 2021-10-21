@@ -16,34 +16,18 @@ body {
 }
 
 h1 {
-	font-size: var(--font-size-4);
-	font-weight: bold;
+	@apply text-6xl;
+	@apply font-bold;
 }
+
 h2, h3 {
-	font-size: var(--font-size-3);
-	font-weight: bold;
-}
-h3 {
-	font-size: var(--font-size-3);
-}
-h4, h5, h6 {
-	font-size: var(--font-size-2);
+	@apply text-5xl;
+	@apply font-bold;
 }
 
-h5, h6 {
-	font-style: italic;
-}
-
-main {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	text-align: center;
-	height: 100%;
-}
-
-#clock {
-	font-size: var(--font-size-8);
-}
+h3 { @apply text-4xl; }
+h4, h5, h6 { @apply text-3xl; }
+h5, h6 { @apply italic; }
 
 #line {
 	transition: all 1s ease-out;
