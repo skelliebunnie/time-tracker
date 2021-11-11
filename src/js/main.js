@@ -7,12 +7,7 @@ const LINE = document.querySelector("#line");
 const clockContainer = document.querySelector("#clock_container");
 const timersContainer = document.querySelector("#timers_container");
 
-const defaultOptions = {
-	show_seconds: true,
-	seconds_display: 'numbers',
-	hr24: false,
-	clock_right: false
-};
+
 let OPTIONS = {};
 
 updateOptions();
@@ -48,26 +43,27 @@ function localTimers(action) {
 
 function updateOptions() {
 	let storedOptions = localStorage.getItem('timer_options') !== undefined ? JSON.parse(localStorage.getItem('timer_options')) : null;
+	
+	const currentOptions = {
+		show_seconds: document.querySelector("[name='show_seconds']").checked,
+		seconds_display: document.querySelector("[name='seconds_display']").value,
+		hr24: document.querySelector("[name='hr24']").checked,
+		clock_right: document.querySelector("[name='clock_right']").checked
+	};
 
-	if(OPTIONS.show_seconds !== undefined && OPTIONS !== defaultOptions) {
-		console.log("user changing options");
-
-		OPTIONS = {
-			show_seconds: document.querySelector("[name='show_seconds']").checked,
-			seconds_display: document.querySelector("[name='seconds_display']").value,
-			hr24: document.querySelector("[name='hr24']").checked,
-			clock_right: document.querySelector("[name='clockright']").checked
-		};
-
-		localStorage.setItem('timer_options', JSON.stringify(OPTIONS));
-
-	} else if(storedOptions !== null) {
-		console.log("loading from localStorage");
+	if(OPTIONS.show_seconds === undefined && storedOptions !== null) {
 		OPTIONS = storedOptions;
 
+	} else {
+		OPTIONS = currentOptions;
 	}
 
+	localStorage.setItem('timer_options', JSON.stringify(OPTIONS));
+	console.log("OPTIONS", OPTIONS);
 	document.querySelector("[name='seconds_display']").value = OPTIONS.seconds_display;
+	if(OPTIONS.show_seconds) document.querySelector("[name='show_seconds']").setAttribute("checked", true);
+	if(OPTIONS.hr24) document.querySelector("[name='hr24']").setAttribute("checked", true);
+	if(OPTIONS.clock_right) document.querySelector("[name='clock_right']").setAttribute("checked", true);
 }
 
 function updateLayout() {
@@ -75,6 +71,10 @@ function updateLayout() {
 	if(OPTIONS.clock_right) {
 		clockContainer.classList.add("col-start-2");
 		timersContainer.classList.add("col-start-1");
+
+	} else {
+		clockContainer.classList.remove("col-start-2");
+		timersContainer.classList.remove("col-start-1");
 	}
 }
 
@@ -237,8 +237,8 @@ function showTimerTime(target, idx) {
 document.querySelectorAll(".opt-input").forEach(item => {
 		item.addEventListener('click', function() {
 			updateOptions();
-
-			if(item.name === 'clockright') {
+			console.log("OPTIONS", OPTIONS);
+			if(item.name === 'clock_right') {
 				updateLayout(item.value);
 
 			} else {
@@ -278,6 +278,9 @@ document.querySelectorAll(".timer").forEach(timer => {
 		};
 
 		title = TIMER_INTERVALS[idx].title;
+	} else {
+		localTimers('save');
+
 	}
 
 	if(timer.querySelector("[name='title']").value !== title) {
