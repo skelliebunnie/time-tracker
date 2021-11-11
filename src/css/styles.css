@@ -30,5 +30,13 @@ h4, h5, h6 {
 h5, h6 {
   @apply italic; }
 
+#line,
+#lineContainer {
+  content: ""; }
+
 #line {
-  transition: all 1s ease-out; }
+  transition: width 999ms linear; }
+
+.disabled {
+  @apply text-neutral-400;
+  @apply cursor-default; }
