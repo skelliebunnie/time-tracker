@@ -18,10 +18,10 @@ module.exports = {
 			img: "./dist/img"
 		},
 		build: {
-			base: "./build",
-			css: "./build/css",
-			js: "./build/js",
-			img: "./build/img"
+			base: "./docs",
+			css: "./docs/css",
+			js: "./docs/js",
+			img: "./docs/img"
 		}
 	}
 }
