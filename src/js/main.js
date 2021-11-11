@@ -271,7 +271,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 		interval: null
 	};
 
-	if(!storedTimers.message && storedTimers[idx]) {
+	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
 		TIMER_INTERVALS[idx] = {
 			...storedTimers[idx],
 			interval: null
