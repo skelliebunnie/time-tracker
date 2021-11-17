@@ -1,25 +1,94 @@
 //main.js file
+const CLOCK = document.querySelector("#clock");
+let clockStats = { width: CLOCK.clientWidth, height: CLOCK.clientHeight };
 
-const COUNTER = document.querySelector("#counter");
+const DOTS_CONTAINER = document.querySelector("#dotsContainer");
+
 const LINE_CONTAINER = document.querySelector("#lineContainer");
 const LINE = document.querySelector("#line");
+
+const CIRCLE_CONTAINER = document.querySelector("#circleContainer");
+const CIRCLE = document.querySelector("#circleContainer .circle");
+const FILL_CIRCLE = document.querySelector("#circleContainer .fill-circle");
 
 const clockContainer = document.querySelector("#clock_container");
 const timersContainer = document.querySelector("#timers_container");
 
-
 let OPTIONS = {};
-
-updateOptions();
-updateLayout();
-updateClockDisplay();
-
-const CLOCK = document.querySelector("#clock");
 
 let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
 let TIMER_INTERVALS = {};
 
 let storedTimers = localStorage.getItem('timers') ? JSON.parse(localStorage.getItem('timers')) : null;
+
+updateOptions();
+addDots();
+setCircle();
+updateLayout();
+updateClockDisplay();
+
+// http://jsfiddle.net/ThiefMaster/LPh33/4/
+// for arranging dots in a circle
+function addDots() {
+	var radius = window.innerWidth < 640 ? clockStats.width / 2.5 : clockStats.width / 3;
+
+  var width = clockStats.width,
+      height = width,
+      angle = 0,
+      step = (2*Math.PI) / 60;
+
+	for(var i = 1; i <= 60; i++) {
+		let dot = document.createElement('i');
+		dot.classList.add("dot", `dot-${i}`, "far", "fa-circle", "text-xxs", "md:text-xs", "m-0.5", "text-accent-500", "absolute");
+		dot.setAttribute("idx", i);
+
+		var dotWidth = window.innerWidth < 640 ? 8 : 12, dotHeight = dotWidth;
+    var x = Math.round((radius * 2) * Math.cos(angle) - dotWidth/2);
+    var y = Math.round((radius * 2) * Math.sin(angle) - dotHeight/2);
+
+    dot.style.top = `${y}px`;
+    dot.style.left = `${x}px`;
+
+    angle += step;
+
+		DOTS_CONTAINER.appendChild(dot);
+	}
+}
+
+function setCircle() {
+	var size = 30 * 16,
+			loadingSize = 0,
+			circleSize = size / 2,
+			circleRadius = (size / 2) - 16 > 0 ? (size / 2) - 16 : 30,
+			strokeWidth = size * 0.05;
+	console.log(CIRCLE_CONTAINER.clientWidth)
+	CIRCLE_CONTAINER.style.width = size;
+	CIRCLE_CONTAINER.style.height = size;
+
+	document.querySelectorAll(".circle").forEach(circle => {
+		circle.setAttribute('cy', circleSize);
+		circle.setAttribute('cx', circleSize);
+		circle.setAttribute('r', circleRadius);
+
+		circle.style.strokeWidth = strokeWidth;
+	});
+
+	FILL_CIRCLE.style.strokeDasharray = size * 3;
+	FILL_CIRCLE.style.strokeDashoffset = size * 3;
+
+	updateCircle();
+}
+
+function updateCircle(sec=null) {
+	if(sec === null) {
+		let dt = new Date();
+		sec = dt.getSeconds();
+	}
+
+	var offset = (30 * 16) * 3;
+
+	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 60));
+}
 
 function localTimers(action) {
 	let res;
@@ -46,10 +115,12 @@ function updateOptions() {
 	
 	const currentOptions = {
 		show_seconds: document.querySelector("[name='show_seconds']").checked,
+		sec_numbers: document.querySelector("[name='sec_numbers']").checked,
 		seconds_display: document.querySelector("[name='seconds_display']").value,
 		hr24: document.querySelector("[name='hr24']").checked,
 		clock_right: document.querySelector("[name='clock_right']").checked
 	};
+	console.log(currentOptions);
 
 	if(OPTIONS.show_seconds === undefined && storedOptions !== null) {
 		OPTIONS = storedOptions;
@@ -59,47 +130,72 @@ function updateOptions() {
 	}
 
 	localStorage.setItem('timer_options', JSON.stringify(OPTIONS));
-	console.log("OPTIONS", OPTIONS);
-	document.querySelector("[name='seconds_display']").value = OPTIONS.seconds_display;
+
+	// document.querySelector("[name='seconds_display']").value = OPTIONS.seconds_display;
+
 	if(OPTIONS.show_seconds) document.querySelector("[name='show_seconds']").setAttribute("checked", true);
+
 	if(OPTIONS.hr24) document.querySelector("[name='hr24']").setAttribute("checked", true);
+
 	if(OPTIONS.clock_right) document.querySelector("[name='clock_right']").setAttribute("checked", true);
 }
 
 function updateLayout() {
-	
+	// clock_right == place-bottom on mobile (< 640)
 	if(OPTIONS.clock_right) {
-		clockContainer.classList.add("col-start-2");
-		timersContainer.classList.add("col-start-1");
+		clockContainer.classList.remove("place-top", "md:place-left");
+		clockContainer.classList.add("place-bottom", "md:place-right");
+
+		timersContainer.classList.remove("place-bottom", "md:place-right");
+		timersContainer.classList.add("place-top", "md:place-left");
 
 	} else {
-		clockContainer.classList.remove("col-start-2");
-		timersContainer.classList.remove("col-start-1");
+		clockContainer.classList.remove("place-bottom", "md:place-right");
+		clockContainer.classList.add("place-top", "md:place-left");
+
+		timersContainer.classList.remove("place-top", "md:place-left");
+		timersContainer.classList.add("place-bottom", "md:place-right");
 	}
 }
 
 function updateClockDisplay() {
+	document.querySelector("#seconds_display").classList.add("hidden");
+
+	DOTS_CONTAINER.classList.add('hidden');
+	LINE_CONTAINER.classList.add('hidden');
+	CIRCLE_CONTAINER.classList.add('hidden');
+
 	if(OPTIONS.show_seconds) {
 		document.querySelector("#seconds_display").classList.remove("hidden");
-	}
 
-	if(OPTIONS.show_seconds && OPTIONS.seconds_display === 'dots') {
-		COUNTER.classList.remove('hidden');
+		const type = OPTIONS.seconds_display;
 
-		LINE.style.width = 0;
-		LINE_CONTAINER.classList.add("hidden");
+		if(type === 'dots') {
+			DOTS_CONTAINER.classList.remove('hidden');
 
-	} else {
-		COUNTER.classList.add('hidden');
-	}
+			LINE_CONTAINER.classList.add('hidden');
+			CIRCLE_CONTAINER.classList.add('hidden');
 
-	if(OPTIONS.show_seconds && OPTIONS.seconds_display === 'line') {
-		COUNTER.classList.add('hidden');
-		LINE_CONTAINER.classList.remove("hidden");
+		} else if(type === 'line') {
+			LINE_CONTAINER.classList.remove('hidden');
 
-	} else {
-		LINE.style.width = 0;
-		LINE_CONTAINER.classList.add("hidden");
+			DOTS_CONTAINER.classList.add('hidden');
+			CIRCLE_CONTAINER.classList.add('hidden');
+
+		} else if(type === 'circle') {
+			LINE_CONTAINER.classList.add('hidden');
+			DOTS_CONTAINER.classList.add('hidden');
+
+			CIRCLE_CONTAINER.classList.remove('hidden');
+			updateCircle();
+
+		} else {
+			DOTS_CONTAINER.classList.add('hidden');
+			LINE_CONTAINER.classList.add('hidden');
+			CIRCLE_CONTAINER.classList.add('hidden');
+
+		}
+
 	}
 }
 
@@ -178,33 +274,52 @@ function showClockTime() {
 	let hour = time.getHours();
 	let min = time.getMinutes();
 	let sec = time.getSeconds();
-	let iSec = time.getSeconds();
 
 	let am_pm = hour > 12 ? "PM" : "AM";
 	if(hour > 12 && !OPTIONS.hr24) hour -= 12;
 
-	hour = hour < 10 ? "0" + hour : hour;
-	min = min < 10 ? "0" + min : min;
-	sec = sec < 10 ? "0" + sec : sec;
+	var h = hour < 10 ? "0" + hour : hour,
+			m = min < 10 ? "0" + min : min;
+			s = sec < 10 ? "0" + sec : sec;
 
-	let currentTime = `${hour}:${min}`;
-	if(OPTIONS.show_seconds && OPTIONS.seconds_display === 'numbers') {
-		currentTime += `:${sec}`;
+	let currentTime = `${h}:${m}`;
+	if(OPTIONS.show_seconds && OPTIONS.sec_numbers) {
+		currentTime += `:${s}`;
+
 	}
 	if(!OPTIONS.hr24) currentTime += ` ${am_pm}`;
 
 	if(OPTIONS.show_seconds && OPTIONS.seconds_display === 'dots') {
-		let dot = '<i class="fas fa-circle fa-xs mx-0.5"></i>';
-		COUNTER.innerHTML = Array(iSec < 59 ? iSec + 1 : 1).fill(dot).join("");
+		// DOTS_CONTAINER.innerHTML = Array(sec < 59 ? sec + 1 : 1).fill(dot).join("");
+
+		DOTS_CONTAINER.querySelectorAll('.dot').forEach(dot => {
+			if(parseInt(dot.getAttribute("idx")) <= sec + 1) {
+				dot.classList.remove('far');
+				dot.classList.add('fas');
+
+			} else {
+				dot.classList.add('far');
+				dot.classList.remove('fas');
+
+			}
+		});
+
 	}
 
 	if(OPTIONS.show_seconds && OPTIONS.seconds_display === 'line') {
-		let width = (iSec / 59) * 100;
-
+		let width = (sec / 59) * 100;
 		LINE.style.width = `${width}%`;
 	}
 
+	if(OPTIONS.show_seconds && OPTIONS.seconds_display === 'circle') {
+		updateCircle(sec);
+	}
+
 	CLOCK.innerText = currentTime;
+	CLOCK.stats = {
+		width: CLOCK.clientWidth,
+		height: CLOCK.clientHEIGHT
+	}
 }
 
 function showTimerTime(target, idx) {
@@ -233,11 +348,14 @@ function showTimerTime(target, idx) {
 	target.innerText = `${res.hour}:${res.minute}:${res.second}`;
 }
 
+/**
+ * CLICK HANDLERS
+ */
 // handle restarting the clock when changing inputs
-document.querySelectorAll(".opt-input").forEach(item => {
+document.querySelectorAll("input.opt-input").forEach(item => {
 		item.addEventListener('click', function() {
 			updateOptions();
-			console.log("OPTIONS", OPTIONS);
+			
 			if(item.name === 'clock_right') {
 				updateLayout(item.value);
 
@@ -249,6 +367,13 @@ document.querySelectorAll(".opt-input").forEach(item => {
 			}
 
 		});
+});
+
+document.querySelector("#seconds_display").addEventListener('change', (e) => {
+	console.log("seconds display select changed", e.target.value)
+	updateOptions();
+
+	updateClockDisplay();
 });
 
 document.querySelectorAll(".timer").forEach(timer => {

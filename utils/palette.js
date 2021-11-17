@@ -1,3 +1,12 @@
+const colors = {
+	'primary': 		'#bdd358', // 'June bud'
+	'secondary': 	'#ad85bd', // 'African violet'
+	'tertiary': 	'#7cc6fe', // 'Maya blue'
+	'accent': 		'#e5625e', // 'fire opal'
+	'neutral': 		'#5a5359'  // 'dark liver'
+}
+const colorKeys = Object.keys(colors);
+
 const shades = {
   50 : '#fafafa', 
   100: '#f5f5f5',
@@ -11,15 +20,6 @@ const shades = {
   900: '#212121',
 };
 const shadeKeys = Object.keys(shades);
-
-const colors = {
-	'primary': 		'#C4F7A1',
-	'secondary': 	'#7EA3CC',
-	'tertiary': 	'#D7CEB2',
-	'accent': 		'#FE654F',
-	'neutral': 		'#535657'
-}
-const colorKeys = Object.keys(colors);
 
 let palette = {}
 for(var i = 0; i < colorKeys.length; i++) {

@@ -14,18 +14,16 @@ body {
   flex-flow: column nowrap; }
 
 h1 {
-  @apply text-6xl;
-  @apply font-bold; }
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold; }
 
 h2, h3 {
-  @apply text-5xl;
-  @apply font-bold; }
+  @apply text-4xl md:text-5xl font-bold; }
 
 h3 {
-  @apply text-4xl; }
+  @apply text-3xl md:text-4xl; }
 
 h4, h5, h6 {
-  @apply text-3xl; }
+  @apply text-2xl md:text-4xl; }
 
 h5, h6 {
   @apply italic; }
@@ -38,5 +36,30 @@ h5, h6 {
   transition: width 999ms linear; }
 
 .disabled {
-  @apply text-neutral-400;
-  @apply cursor-default; }
+  @apply text-neutral-600 cursor-default; }
+
+.place-top,
+\.md\:place-left {
+  @apply row-start-1 col-start-1; }
+
+.place-bottom,
+\.md\:place-right {
+  @apply row-start-2 col-start-1 md:row-start-1 md:col-start-2; }
+
+#circleContainer {
+  width: 30rem;
+  height: 30rem; }
+
+.circle {
+  transition: 500ms;
+  fill: transparent;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke: currentColor;
+  @apply text-neutral-600; }
+
+.circle.fill-circle {
+  stroke: currentColor;
+  @apply text-accent-500;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000; }

@@ -24,6 +24,7 @@ module.exports = {
         'body': ['Muli', 'ui-sans-serif', 'system-ui']
       },
       fontSize: {
+      	'xxs':  '0.5rem',
       	'10xl': '10rem',
       	'12xl': '12rem',
       	'14xl': '14rem',
@@ -44,12 +45,25 @@ module.exports = {
         'min': 'min-content',
         'max': 'max-content'
       },
+      minHeight: {
+    		'0': '0',
+    		'1/4': '25vh',
+	      '1/2': '50vh',
+	      '3/4': '75vh',
+    	},
       cursor: {
         crosshair: 'crosshair',
         grab: 'grab',
         help: 'help',
         'zoom-in': 'zoom-in',
         'zoom-out': 'zoom-out'
+      },
+      strokeWidth: {
+      	'8': '8',
+      	'16': '16'
+      },
+      fill: {
+      	transparent: 'transparent'
       }
     },
     variants: {
