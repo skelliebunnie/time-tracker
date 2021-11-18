@@ -51,7 +51,7 @@ h5, h6 {
   height: 30rem; }
 
 .circle {
-  transition: 500ms;
+  transition: 999ms;
   fill: transparent;
   stroke-dashoffset: 0;
   stroke-linecap: round;

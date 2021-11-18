@@ -56,14 +56,14 @@ function addDots() {
 }
 
 function setCircle() {
-	var size = 30 * 16,
+	var size = clockStats.width * 1.45,
 			loadingSize = 0,
 			circleSize = size / 2,
 			circleRadius = (size / 2) - 16 > 0 ? (size / 2) - 16 : 30,
 			strokeWidth = size * 0.05;
-	console.log(CIRCLE_CONTAINER.clientWidth)
-	CIRCLE_CONTAINER.style.width = size;
-	CIRCLE_CONTAINER.style.height = size;
+
+	CIRCLE_CONTAINER.style.width = `${size + 50}px`;
+	CIRCLE_CONTAINER.style.height = `${size + 50}px`;
 
 	document.querySelectorAll(".circle").forEach(circle => {
 		circle.setAttribute('cy', circleSize);
@@ -85,7 +85,7 @@ function updateCircle(sec=null) {
 		sec = dt.getSeconds();
 	}
 
-	var offset = (30 * 16) * 3;
+	var offset = (clockStats.width * 1.45) * 3;
 
 	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 60));
 }
@@ -120,7 +120,6 @@ function updateOptions() {
 		hr24: document.querySelector("[name='hr24']").checked,
 		clock_right: document.querySelector("[name='clock_right']").checked
 	};
-	console.log(currentOptions);
 
 	if(OPTIONS.show_seconds === undefined && storedOptions !== null) {
 		OPTIONS = storedOptions;
@@ -131,13 +130,18 @@ function updateOptions() {
 
 	localStorage.setItem('timer_options', JSON.stringify(OPTIONS));
 
-	// document.querySelector("[name='seconds_display']").value = OPTIONS.seconds_display;
+	Object.keys(OPTIONS).forEach(key => {
+		if(key !== 'seconds_display') {
+			if(OPTIONS[key]) {
+				document.querySelector(`[name="${key}"]`).setAttribute("checked", true);
+			} else {
+				document.querySelector(`[name="${key}"]`).removeAttribute("checked");
+			}
+		}
+	});
 
-	if(OPTIONS.show_seconds) document.querySelector("[name='show_seconds']").setAttribute("checked", true);
-
-	if(OPTIONS.hr24) document.querySelector("[name='hr24']").setAttribute("checked", true);
-
-	if(OPTIONS.clock_right) document.querySelector("[name='clock_right']").setAttribute("checked", true);
+	updateLayout();
+	updateClockDisplay();
 }
 
 function updateLayout() {
