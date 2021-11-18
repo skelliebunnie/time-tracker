@@ -36,13 +36,13 @@
 	</header>
 	<main class="flex-1 grid grid-cols-1 md:grid-cols-2 items-stretch border-1 border-accent-400">
 		<article id="clock_container" class="place-top md:place-left relative flex flex-col flex-1 items-center justify-center text-dark text-center p-4 min-h-1/2 md:min-h-auto">
-			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-6xl lg:text-8xl mb-4">00:00 MM</h2>
+			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-5xl lg:text-7xl mb-4 min-w-1/5"></h2>
 			<!-- counter containers -->
 			<div id="dotsContainer" class="absolute origin-left transform translate-x-1/2 -rotate-90 flex-none w-9/12 box-border hidden"></div>
 			<div id="lineContainer" class="bg-neutral-400 h-2 w-9/12 hidden">
 				<div id="line" class="bg-accent-500 h-2"></div>
 			</div>
-			<svg id="circleContainer" class="absolute origin-left flex-none transform translate-x-1/2 translate-y-80 -rotate-90 box-border hidden flex items-center justify-center m-0 p-0 bg-transparent" width="400" height="400">
+			<svg id="circleContainer" class="absolute origin-left flex-none transform box-border hidden flex items-center justify-center m-0 p-0 bg-transparent" width="400" height="400">
 				<circle class="circle" />
 				<circle class="circle fill-circle" />
 			</svg>

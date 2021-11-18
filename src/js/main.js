@@ -1,6 +1,5 @@
 //main.js file
 const CLOCK = document.querySelector("#clock");
-let clockStats = { width: CLOCK.clientWidth, height: CLOCK.clientHeight };
 
 const DOTS_CONTAINER = document.querySelector("#dotsContainer");
 
@@ -13,6 +12,8 @@ const FILL_CIRCLE = document.querySelector("#circleContainer .fill-circle");
 
 const clockContainer = document.querySelector("#clock_container");
 const timersContainer = document.querySelector("#timers_container");
+
+let clockStats = { width: clockContainer.clientWidth, height: clockContainer.clientHeight };
 
 let OPTIONS = {};
 
@@ -30,17 +31,21 @@ updateClockDisplay();
 // http://jsfiddle.net/ThiefMaster/LPh33/4/
 // for arranging dots in a circle
 function addDots() {
+	while(DOTS_CONTAINER.firstChild) {
+		DOTS_CONTAINER.removeChild(DOTS_CONTAINER.firstChild);
+	}
+
 	var radius = window.innerWidth < 640 ? clockStats.width / 2.5 : clockStats.width / 3;
 
   var width = clockStats.width,
       height = width,
       angle = 0,
-      step = (2*Math.PI) / 60;
+      step = (2*Math.PI) / 59;
 
-	for(var i = 1; i <= 60; i++) {
+	for(var i = 1; i <= 59; i++) {
 		let dot = document.createElement('i');
 		dot.classList.add("dot", `dot-${i}`, "far", "fa-circle", "text-xxs", "md:text-xs", "m-0.5", "text-accent-500", "absolute");
-		dot.setAttribute("idx", i);
+		dot.setAttribute("data-idx", i);
 
 		var dotWidth = window.innerWidth < 640 ? 8 : 12, dotHeight = dotWidth;
     var x = Math.round((radius * 2) * Math.cos(angle) - dotWidth/2);
@@ -56,18 +61,24 @@ function addDots() {
 }
 
 function setCircle() {
-	var size = clockStats.width * 1.45,
+	clockStats = {
+		width: clockContainer.clientWidth,
+		height: clockContainer.clientWidth
+	}
+
+	var size = clockStats.width - 40,
 			loadingSize = 0,
-			circleSize = size / 2,
+			containerWidth = clockStats.width,
+			containerHeight = clockStats.height,
 			circleRadius = (size / 2) - 16 > 0 ? (size / 2) - 16 : 30,
 			strokeWidth = size * 0.05;
 
-	CIRCLE_CONTAINER.style.width = `${size + 50}px`;
-	CIRCLE_CONTAINER.style.height = `${size + 50}px`;
+	CIRCLE_CONTAINER.style.width = `${containerWidth}px`;
+	CIRCLE_CONTAINER.style.height = `${containerHeight}px`;
 
 	document.querySelectorAll(".circle").forEach(circle => {
-		circle.setAttribute('cy', circleSize);
-		circle.setAttribute('cx', circleSize);
+		circle.setAttribute('cy', containerWidth / 2);
+		circle.setAttribute('cx', containerHeight / 2);
 		circle.setAttribute('r', circleRadius);
 
 		circle.style.strokeWidth = strokeWidth;
@@ -85,7 +96,7 @@ function updateCircle(sec=null) {
 		sec = dt.getSeconds();
 	}
 
-	var offset = (clockStats.width * 1.45) * 3;
+	var offset = clockStats.width * 3;
 
 	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 60));
 }
@@ -191,7 +202,7 @@ function updateClockDisplay() {
 			DOTS_CONTAINER.classList.add('hidden');
 
 			CIRCLE_CONTAINER.classList.remove('hidden');
-			updateCircle();
+			setCircle();
 
 		} else {
 			DOTS_CONTAINER.classList.add('hidden');
@@ -297,15 +308,17 @@ function showClockTime() {
 		// DOTS_CONTAINER.innerHTML = Array(sec < 59 ? sec + 1 : 1).fill(dot).join("");
 
 		DOTS_CONTAINER.querySelectorAll('.dot').forEach(dot => {
-			if(parseInt(dot.getAttribute("idx")) <= sec + 1) {
-				dot.classList.remove('far');
-				dot.classList.add('fas');
-
-			} else {
+			if(sec === 0) {
 				dot.classList.add('far');
 				dot.classList.remove('fas');
 
+			} else if(parseInt(dot.dataset.idx) <= sec) {
+				dot.classList.remove('far');
+				dot.classList.add('fas');
+
 			}
+
+			
 		});
 
 	}
@@ -320,9 +333,21 @@ function showClockTime() {
 	}
 
 	CLOCK.innerText = currentTime;
-	CLOCK.stats = {
-		width: CLOCK.clientWidth,
-		height: CLOCK.clientHEIGHT
+	if(clockStats.width !== CLOCK.clientWidth) {
+		updateSecondsDisplay();
+	}
+}
+
+function updateSecondsDisplay() {
+	clockStats = {
+		width: clockContainer.clientWidth,
+		height: clockContainer.clientHeight
+	}
+
+	if(OPTIONS.seconds_display === 'dots') {
+		addDots();
+	} else if(OPTIONS.seconds_display === 'circle') {
+		setCircle();
 	}
 }
 
@@ -374,10 +399,7 @@ document.querySelectorAll("input.opt-input").forEach(item => {
 });
 
 document.querySelector("#seconds_display").addEventListener('change', (e) => {
-	console.log("seconds display select changed", e.target.value)
 	updateOptions();
-
-	updateClockDisplay();
 });
 
 document.querySelectorAll(".timer").forEach(timer => {

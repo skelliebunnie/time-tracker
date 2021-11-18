@@ -76,4 +76,7 @@ h5, h6 { @apply italic; }
 	@apply text-accent-500;
 	stroke-dasharray: 1000;
 	stroke-dashoffset: 1000;
+	transform-box: fill-box;
+	transform-origin: center;
+	transform: rotate(-90deg);
 }
