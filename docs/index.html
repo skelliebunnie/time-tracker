@@ -6,48 +6,55 @@
 	<link rel="stylesheet" href="./css/style.css">
 	<script src="https://kit.fontawesome.com/68e1458f78.js" crossorigin="anonymous"></script>
 </head>
-<body class='bg-neutral-300'>
-	<header class="text-center bg-neutral-900 text-light">
+<body class='bg-neutral-300 flex flex-col items-stretch h-screen md:max-h-screen md:overflow-hidden'>
+	<header class="flex-0 text-center bg-neutral-900 text-light">
 		<h1>Time Tracker</h1>
 		<ul class="flex max-w-5xl mx-auto my-6">
-			<li class="flex-1"><strong>Options:</strong></li>
-			<li class="flex-1">
-				<label for="show_seconds">
-					<input class="opt-input" type="checkbox" name="show_seconds" value="show_seconds" checked> Show Seconds</label>
-					<select id="seconds_display" class="opt-input mx-4 px-2 py-1 text-dark hidden" name="seconds_display" value="numbers">
-						<option value="numbers" selected>Numbers</option>
+			<li class="flex-0"><strong>Options:</strong></li>
+			<li class="flex-1 flex flex-row flex-wrap">
+				<label class="flex-auto" for="show_seconds"><input class="opt-input" type="checkbox" name="show_seconds" value="show_seconds" checked> Show Seconds</label>
+				<label class="flex-auto" for="sec_numbers"><input class="opt-input" type="checkbox" name="sec_numbers" value="sec_numbers" checked> Include Numbers</label>
+				<label class="flex-auto" for="seconds_display">
+					Display Style
+					<select id="seconds_display" class="opt-input px-2 py-1 w-2/3 mt-2 text-dark hidden" name="seconds_display">
+						<option value="none">-- None --</option>
 						<option value="dots">Dots</option>
 						<option value="line">Line</option>
+						<option value="circle" selected>Circle</option>
 					</select>
+				</label>
+			</li>
+			<li class="flex-1">
+				<label for="clock_right">
+					<input class="opt-input" type="checkbox" name="clock_right" value="clock_right"> Clock on Right / Bottom</label>
 			</li>
 			<li class="flex-1">
 				<label for="hr24">
 					<input class="opt-input" type="checkbox" name="hr24" value="hr24"> 24-Hour Time</label>
 			</li>
-			<li class="flex-1">
-				<label for="clock_right">
-					<input class="opt-input" type="checkbox" name="clock_right" value="clock_right"> Clock on Right</label>
-			</li>
 		</ul>
 	</header>
-	<main class="grid grid-cols-1 md:grid-cols-2 h-screen text-center">
-		<article id="clock_container" class="flex flex-col items-center justify-center text-dark col-span-1 row-start-1">
-			<h2 id="clock" class="flex-shrink-0 flex-grow-1 text-8xl mb-4"></h2>
-			<div id="counter" class="flex-none text-xs w-9/12 mx-8 box-border">
-			</div>
+	<main class="flex-1 grid grid-cols-1 md:grid-cols-2 items-stretch border-1 border-accent-400">
+		<article id="clock_container" class="place-top md:place-left relative flex flex-col flex-1 items-center justify-center text-dark text-center p-4 min-h-1/2 md:min-h-auto">
+			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-6xl lg:text-8xl mb-4">00:00 MM</h2>
+			<!-- counter containers -->
+			<div id="dotsContainer" class="absolute origin-left transform translate-x-1/2 -rotate-90 flex-none w-9/12 box-border hidden"></div>
 			<div id="lineContainer" class="bg-neutral-400 h-2 w-9/12 hidden">
 				<div id="line" class="bg-accent-500 h-2"></div>
 			</div>
+			<svg id="circleContainer" class="absolute origin-left flex-none transform translate-x-1/2 translate-y-80 -rotate-90 box-border hidden flex items-center justify-center m-0 p-0 bg-transparent" width="400" height="400">
+				<circle class="circle" />
+				<circle class="circle fill-circle" />
+			</svg>
 		</article>
-		<article id="timers_container" class="bg-neutral-700 text-light p-4 col-span-1 row-start-1">
-			<div class="timer flex-1 bg-primary-400 p-4 text-dark" data-idx="0">
-				<h3 class="title-input">
+		<article id="timers_container" class="place-bottom md:place-right flex flex-row flex-1 flex-wrap items-start bg-neutral-700 text-light p-4">
+			<div class="timer flex-1 bg-primary-400 p-4 text-dark text-center" data-idx="0">
+				<h3>
 					<form>
-						<input type="text" name="title" placeholder="Title" value="Title" class="p-2 text-center bg-primary-300">
-						<div class="h-0 w-0 border-0 p-0 m-0 overflow-hidden"><input type="submit" tabindex="-1"></div>
+						<input type="text" class="title-input text-center w-11/12 px-2 py-1" name="title" value="Title">
 					</form>
 				</h3>
-				<span class="play-pause inline-block m-4" data-playing="false"><i class="fad fa-play-circle fa-10x cursor-pointer"></i></span>
+				<span class="play-pause inline-block m-4" data-playing="false"><i class="fad fa-play-circle text-9xl cursor-pointer"></i></span>
 				<div class="time-container ml-5">
 					<p class="time text-2xl inline-block mr-2 align-middle">00:00:00</p>
 					<i class="fas fa-backspace text-xl align-middle cursor-pointer clear-time text-error-500 disabled"></i>
