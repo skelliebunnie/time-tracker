@@ -66,3 +66,12 @@ h5, h6 {
   transform-box: fill-box;
   transform-origin: center;
   transform: rotate(-90deg); }
+
+.clear-time:not(.disabled):hover {
+  @apply text-error-700; }
+
+.save-time:not(.disabled):hover {
+  @apply text-success-700; }
+
+.add-timer {
+  border-radius: 50%; }

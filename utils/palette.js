@@ -1,6 +1,6 @@
 const colors = {
 	'primary': 		'#bdd358', // 'June bud'
-	'secondary': 	'#ad85bd', // 'African violet'
+	'secondary': 	'#8a2daf', // 'purple Munsell'
 	'tertiary': 	'#7cc6fe', // 'Maya blue'
 	'accent': 		'#e5625e', // 'fire opal'
 	'neutral': 		'#5a5359'  // 'dark liver'

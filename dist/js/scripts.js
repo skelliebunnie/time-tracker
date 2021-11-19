@@ -13,12 +13,18 @@ const FILL_CIRCLE = document.querySelector("#circleContainer .fill-circle");
 const clockContainer = document.querySelector("#clock_container");
 const timersContainer = document.querySelector("#timers_container");
 
-let clockStats = { width: clockContainer.clientWidth, height: clockContainer.clientHeight };
+let clockSize = { 
+	width: clockContainer.clientWidth, 
+	height: clockContainer.clientHeight,
+	circle: clockContainer.clientWidth - 40,
+	radius: ((clockContainer.clientWidth - 40) / 2) - 40
+};
 
 let OPTIONS = {};
 
 let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
 let TIMER_INTERVALS = {};
+let TIME_ENTRIES = {};
 
 let storedTimers = localStorage.getItem('timers') ? JSON.parse(localStorage.getItem('timers')) : null;
 
@@ -28,6 +34,15 @@ setCircle();
 updateLayout();
 updateClockDisplay();
 
+function updateClockSize() {
+	clockSize = {
+		width: clockContainer.clientWidth,
+		height: clockContainer.clientWidth,
+		circle: clockContainer.clientWidth - 40,
+		radius: ((clockContainer.clientWidth - 40) / 2) - 40
+	}
+}
+
 // http://jsfiddle.net/ThiefMaster/LPh33/4/
 // for arranging dots in a circle
 function addDots() {
@@ -35,9 +50,9 @@ function addDots() {
 		DOTS_CONTAINER.removeChild(DOTS_CONTAINER.firstChild);
 	}
 
-	var radius = window.innerWidth < 640 ? clockStats.width / 2.5 : clockStats.width / 3;
+	var radius = clockSize.radius / 3;
 
-  var width = clockStats.width,
+  var width = clockSize.width,
       height = width,
       angle = 0,
       step = (2*Math.PI) / 59;
@@ -61,24 +76,19 @@ function addDots() {
 }
 
 function setCircle() {
-	clockStats = {
-		width: clockContainer.clientWidth,
-		height: clockContainer.clientWidth
-	}
-
-	var size = clockStats.width - 40,
+	var size = clockSize.circle,
+			containerWidth = clockSize.width,
+			containerHeight = clockSize.height,
+			circleRadius = clockSize.radius,
 			loadingSize = 0,
-			containerWidth = clockStats.width,
-			containerHeight = clockStats.height,
-			circleRadius = (size / 2) - 16 > 0 ? (size / 2) - 16 : 30,
 			strokeWidth = size * 0.05;
 
 	CIRCLE_CONTAINER.style.width = `${containerWidth}px`;
 	CIRCLE_CONTAINER.style.height = `${containerHeight}px`;
 
 	document.querySelectorAll(".circle").forEach(circle => {
-		circle.setAttribute('cy', containerWidth / 2);
-		circle.setAttribute('cx', containerHeight / 2);
+		circle.setAttribute('cy', (containerWidth / 2) + 40);
+		circle.setAttribute('cx', (containerHeight / 2) - 40);
 		circle.setAttribute('r', circleRadius);
 
 		circle.style.strokeWidth = strokeWidth;
@@ -96,7 +106,7 @@ function updateCircle(sec=null) {
 		sec = dt.getSeconds();
 	}
 
-	var offset = clockStats.width * 3;
+	var offset = clockSize.circle * 3;
 
 	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 60));
 }
@@ -110,11 +120,31 @@ function localTimers(action) {
 
 	if(action === "set" || action === "save") {
 		localStorage.setItem('timers', JSON.stringify(TIMER_INTERVALS));
-		res = { message: 'complete' };
+		res = { message: 'saved timers' };
 	}
 
 	if(action === "clear") {
 		localStorage.removeItem('timers');
+		res = { message: 'timers removed' };
+	}
+
+	return res;
+}
+
+function localTimeEntries(action) {
+	let res;
+
+	if(action === "get") {
+		res = localStorage.getItem('time_entries') !== undefined ? JSON.parse(localStorage.getItem('time_entries')) : { message: 'no time_entries found' };
+	}
+
+	if(action === "set" || action === "save") {
+		localStorage.setItem('time_entries', JSON.stringify(TIME_ENTRIES));
+		res = { message: 'saved time entries' };
+	}
+
+	if(action === "clear") {
+		localStorage.removeItem('time_entries');
 		res = { message: 'timers removed' };
 	}
 
@@ -333,21 +363,20 @@ function showClockTime() {
 	}
 
 	CLOCK.innerText = currentTime;
-	if(clockStats.width !== CLOCK.clientWidth) {
+	if(clockSize.width !== clockContainer.clientWidth) {
 		updateSecondsDisplay();
 	}
 }
 
 function updateSecondsDisplay() {
-	clockStats = {
-		width: clockContainer.clientWidth,
-		height: clockContainer.clientHeight
-	}
+	updateClockSize();
 
 	if(OPTIONS.seconds_display === 'dots') {
 		addDots();
+
 	} else if(OPTIONS.seconds_display === 'circle') {
 		setCircle();
+
 	}
 }
 
@@ -409,6 +438,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 	const storedTimers = localTimers('get');
 
 	let clearTimeBtn = timer.querySelector(".clear-time");
+	let saveTimeBtn = timer.querySelector(".save-time");
 
 	let idx = parseInt(timer.dataset['idx']);
 	let timeContainer = timer.querySelector(".time");
@@ -421,6 +451,14 @@ document.querySelectorAll(".timer").forEach(timer => {
 		s: 0,
 		interval: null
 	};
+
+	TIME_ENTRIES[idx] = {
+		title,
+		h: 0,
+		m: 0,
+		s: 0,
+		date: formatDateTime({}, true, true, true)
+	}
 
 	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
 		TIMER_INTERVALS[idx] = {
@@ -440,6 +478,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 	if(TIMER_INTERVALS[idx].h > 0 || TIMER_INTERVALS[idx].m > 0 || TIMER_INTERVALS[idx].s > 0) {
 		clearTimeBtn.classList.remove("disabled");
+		saveTimeBtn.classList.remove("disabled");
 	}
 
 	const formattedTime = formatDateTime(TIMER_INTERVALS[idx], false, false, true);
@@ -466,11 +505,16 @@ document.querySelectorAll(".timer").forEach(timer => {
 				}, 1000);
 
 			clearTimeBtn.classList.remove("disabled");
+			saveTimeBtn.classList.remove("disabled");
 		}
 	});
 
 	clearTimeBtn.addEventListener("click", function() {
 		if(!clearTimeBtn.classList.contains("disabled")) {
+			playPauseBtn.dataset.playing = false;
+			playPauseBtn.classList.remove("fa-pause-circle");
+			playPauseBtn.classList.add("fa-play-circle");
+
 			clearInterval(TIMER_INTERVALS[idx].interval);
 
 			TIMER_INTERVALS[idx] = {
@@ -485,6 +529,33 @@ document.querySelectorAll(".timer").forEach(timer => {
 			localTimers('save');
 
 			clearTimeBtn.classList.add("disabled");
+			saveTimeBtn.classList.add("disabled");
+		}
+	});
+
+	saveTimeBtn.addEventListener("click", function() {
+		if(!saveTimeBtn.classList.contains("disabled")) {
+			playPauseBtn.dataset.playing = false;
+			playPauseBtn.classList.remove("fa-pause-circle");
+			playPauseBtn.classList.add("fa-play-circle");
+
+			clearInterval(TIMER_INTERVALS[idx].interval);
+
+			TIMER_INTERVALS[idx] = {
+				...TIMER_INTERVALS[idx],
+				interval: null
+			};
+			timeContainer.innerText = formatDateTime(TIMER_INTERVALS[idx], false, false, true);
+
+			TIME_ENTRIES[idx] = {
+				...TIME_ENTRIES[idx],
+				h: TIMER_INTERVALS[idx].h,
+				m: TIMER_INTERVALS[idx].m,
+				s: TIMER_INTERVALS[idx].s
+			}
+
+			localTimers('save');
+			localTimeEntries('save');
 		}
 	});
 
