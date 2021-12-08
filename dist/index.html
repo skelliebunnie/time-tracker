@@ -35,6 +35,7 @@
 		</ul>
 	</header>
 	<main class="flex-1 grid grid-cols-1 md:grid-cols-2 items-stretch border-1 border-accent-400">
+		<!-- CLOCK -->
 		<article id="clock_container" class="place-top md:place-left relative flex flex-col flex-1 items-center justify-center text-dark text-center p-4 min-h-1/2 md:min-h-auto">
 			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-5xl lg:text-7xl mb-4 min-w-1/5"></h2>
 			<!-- counter containers -->
@@ -42,25 +43,31 @@
 			<div id="lineContainer" class="bg-neutral-400 h-2 w-9/12 hidden">
 				<div id="line" class="bg-accent-500 h-2"></div>
 			</div>
-			<svg id="circleContainer" class="absolute origin-left flex-none transform box-border hidden flex items-center justify-center m-0 p-0 bg-transparent" width="400" height="400">
+			<svg id="circleContainer" class="absolute origin-left flex-none box-border hidden flex items-center justify-center m-0 p-0 bg-transparent" width="400" height="400">
 				<circle class="circle" />
 				<circle class="circle fill-circle" />
 			</svg>
 		</article>
-		<article id="tabbedContent" class="place-bottom md:place-right flex flex-col flex-1 items-start bg-neutral-700 text-light p-4">
+		<!-- TABS: TIMERS & TIME ENTRIES -->
+		<article id="tabbedContent" class="place-bottom md:place-right flex flex-col flex-1 items-start bg-neutral-800 text-light p-4">
+			<!-- TABS: NAV -->
 			<nav id="tabs" class="flex flex-0 flex-row flex-wrap justify-start items-stretch">
-				<span class="flex-grow-1">Timers</span>
-				<span class="flex-grow-1">Time Entries</span>
+				<span class="tab flex-grow-1 py-2 px-4 active" data-content="timers_container">Timers</span>
+				<span class="tab flex-grow-1 py-2 px-4" data-content="time_entries">Time Entries</span>
 			</nav>
-			<section id="timers_container" class="flex flex-row flex-grow-1 flex-wrap items-start w-full">
-				<div class="timer flex-1 bg-primary-400 p-4 text-dark text-center ml-8 mt-8 relative" data-idx="0">
-					<header class="flex flex-row items-center justify-around pl-12">
+			<!-- TABS: CONTENT -->
+			<!-- timers -->
+			<section id="timers_container" class="tab-content flex flex-row flex-grow-1 flex-wrap items-start w-full bg-neutral-400 p-8">
+				<div class="timer flex-1 bg-primary-400 p-4 text-dark text-center relative" data-idx="0">
+					<header class="flex flex-row items-center justify-around">
 						<h3 class="flex-1">
 							<form class="form mb-0">
 								<input type="text" class="title-input text-center w-11/12 px-2 py-1" name="title" value="Title">
 							</form>
 						</h3>
-						<i class="fas fa-plus-circle add-timer text-4xl align-top text-secondary-500 mr-6 cursor-pointer hover:text-secondary-700 absolute -top-4 -left-4 bg-secondary-100"></i>
+						<span class="add-timer absolute -top-3 -left-4 mr-3 cursor-pointer align-top">
+							<i class="fad fa-plus-circle text-4xl text-secondary-500 hover:text-secondary-700"></i>
+						</span>
 					</header>
 					<main>
 						<span class="play-pause inline-block m-4" data-playing="false"><i class="fad fa-play-circle text-9xl cursor-pointer"></i></span>
@@ -72,7 +79,10 @@
 					</footer>
 				</div>
 			</section>
-			<section id="time_entries" class="flex flex-row flex-1 flex-wrap items-start hidden"></section>
+			<!-- time entries -->
+			<section id="time_entries" class="tab-content flex flex-row flex-1 flex-wrap items-start w-full bg-tertiary-200 hidden">
+				
+			</section>
 		</article>
 	</main>
 	<script src="./js/scripts.js"></script>

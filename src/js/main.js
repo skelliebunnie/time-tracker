@@ -17,7 +17,7 @@ let clockSize = {
 	width: clockContainer.clientWidth, 
 	height: clockContainer.clientHeight,
 	circle: clockContainer.clientWidth - 40,
-	radius: ((clockContainer.clientWidth - 40) / 2) - 40
+	radius: (clockContainer.clientWidth - 40) / 2
 };
 
 let OPTIONS = {};
@@ -39,7 +39,7 @@ function updateClockSize() {
 		width: clockContainer.clientWidth,
 		height: clockContainer.clientWidth,
 		circle: clockContainer.clientWidth - 40,
-		radius: ((clockContainer.clientWidth - 40) / 2) - 40
+		radius: (clockContainer.clientWidth / 4) - 40
 	}
 }
 
@@ -79,7 +79,7 @@ function setCircle() {
 	var size = clockSize.circle,
 			containerWidth = clockSize.width,
 			containerHeight = clockSize.height,
-			circleRadius = clockSize.radius,
+			circleRadius = clockSize.radius / 1.5,
 			loadingSize = 0,
 			strokeWidth = size * 0.05;
 
@@ -87,8 +87,8 @@ function setCircle() {
 	CIRCLE_CONTAINER.style.height = `${containerHeight}px`;
 
 	document.querySelectorAll(".circle").forEach(circle => {
-		circle.setAttribute('cy', (containerWidth / 2) + 40);
-		circle.setAttribute('cx', (containerHeight / 2) - 40);
+		circle.setAttribute('cy', containerHeight / 2);
+		circle.setAttribute('cx', containerWidth / 2);
 		circle.setAttribute('r', circleRadius);
 
 		circle.style.strokeWidth = strokeWidth;
@@ -108,7 +108,7 @@ function updateCircle(sec=null) {
 
 	var offset = clockSize.circle * 3;
 
-	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 60));
+	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 85));
 }
 
 function localTimers(action) {

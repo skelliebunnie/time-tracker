@@ -55,13 +55,7 @@ h5, h6 { @apply italic; }
 }
 
 // CIRCLE TIMER
-// https://codepen.io/jar482/pen/PmJmVa
-
-#circleContainer {
-	width: 30rem;
-	height: 30rem;
-}
-
+// based on https://codepen.io/jar482/pen/PmJmVa
 .circle {
   transition: 999ms;
 	fill: transparent;
@@ -69,16 +63,16 @@ h5, h6 { @apply italic; }
   stroke-linecap: round;
 	stroke: currentColor;
   @apply text-neutral-600;
-}
 
-.circle.fill-circle {
-	stroke: currentColor;
-	@apply text-accent-500;
-	stroke-dasharray: 1000;
-	stroke-dashoffset: 1000;
-	transform-box: fill-box;
-	transform-origin: center;
-	transform: rotate(-90deg);
+  &.fill-circle {
+		stroke: currentColor;
+		@apply text-accent-500;
+		stroke-dasharray: 1000;
+		stroke-dashoffset: 1000;
+		transform-box: fill-box;
+		transform-origin: center;
+		transform: rotate(-90deg);
+	}
 }
 
 .clear-time:not(.disabled):hover {
@@ -91,4 +85,26 @@ h5, h6 { @apply italic; }
 
 .add-timer {
 	border-radius: 50%;
+}
+
+.tab {
+	@apply bg-neutral-600;
+
+	&.active {
+		@apply text-neutral-900;
+		z-index: 2;
+	}
+
+	&:first-child.active {
+		box-shadow: 1px 0 2px -1px #5a5359;
+	}
+	&:not(:first-child).active {
+		box-shadow: -1px 0 2px -1px #5a5359;
+	}
+}
+
+.tab-content {
+	z-index: 5;
+	top: -1px;
+	min-height: 16px;
 }
