@@ -1,15 +1,7 @@
-function getChildren(n, skipMe){
-    var r = [];
-    for ( ; n; n = n.nextSibling ) 
-       if ( n.nodeType == 1 && n != skipMe)
-          r.push( n );        
-    return r;
-};
+const clockContainer = document.querySelector("#clock_container");
+const timersContainer = document.querySelector("#timers_container");
 
-function getSiblings(n) {
-    return getChildren(n.parentNode.firstChild, n);
-}
-//main.js file
+/** CLOCK **/
 const CLOCK = document.querySelector("#clock");
 
 const DOTS_CONTAINER = document.querySelector("#dotsContainer");
@@ -21,9 +13,6 @@ const CIRCLE_CONTAINER = document.querySelector("#circleContainer");
 const CIRCLE = document.querySelector("#circleContainer .circle");
 const FILL_CIRCLE = document.querySelector("#circleContainer .fill-circle");
 
-const clockContainer = document.querySelector("#clock_container");
-const timersContainer = document.querySelector("#timers_container");
-
 let clockSize = { 
 	width: clockContainer.clientWidth, 
 	height: clockContainer.clientHeight,
@@ -34,15 +23,34 @@ let clockSize = {
 let OPTIONS = {};
 
 let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
-let TIMER_INTERVALS = {};
-let TIME_ENTRIES = {};
 
+/** TIMERS **/
+let TIMER_INTERVALS = {};
 let storedTimers = localStorage.getItem('timers') ? JSON.parse(localStorage.getItem('timers')) : null;
 
+/** TIME ENTRIES **/
+let TIME_ENTRIES = {};
+/**
+ * GENERAL FUNCTIONS
+ */
+
+function getChildren(n, skipMe){
+    var r = [];
+    for ( ; n; n = n.nextSibling ) 
+       if ( n.nodeType == 1 && n != skipMe)
+          r.push( n );        
+    return r;
+};
+
+function getSiblings(n) {
+    return getChildren(n.parentNode.firstChild, n);
+}
+/**
+ * CLOCK FUNCTIONS
+ */
 updateOptions();
 addDots();
 setCircle();
-updateLayout();
 updateClockDisplay();
 
 function updateClockSize() {
@@ -122,46 +130,6 @@ function updateCircle(sec=null) {
 	FILL_CIRCLE.style.strokeDashoffset = offset - (offset * (sec / 85));
 }
 
-function localTimers(action) {
-	let res;
-
-	if(action === "get") {
-		res = localStorage.getItem('timers') !== undefined ? JSON.parse(localStorage.getItem('timers')) : { message: 'no timers found' };
-	}
-
-	if(action === "set" || action === "save") {
-		localStorage.setItem('timers', JSON.stringify(TIMER_INTERVALS));
-		res = { message: 'saved timers' };
-	}
-
-	if(action === "clear") {
-		localStorage.removeItem('timers');
-		res = { message: 'timers removed' };
-	}
-
-	return res;
-}
-
-function localTimeEntries(action) {
-	let res;
-
-	if(action === "get") {
-		res = localStorage.getItem('time_entries') !== undefined ? JSON.parse(localStorage.getItem('time_entries')) : { message: 'no time_entries found' };
-	}
-
-	if(action === "set" || action === "save") {
-		localStorage.setItem('time_entries', JSON.stringify(TIME_ENTRIES));
-		res = { message: 'saved time entries' };
-	}
-
-	if(action === "clear") {
-		localStorage.removeItem('time_entries');
-		res = { message: 'timers removed' };
-	}
-
-	return res;
-}
-
 function updateOptions() {
 	let storedOptions = localStorage.getItem('timer_options') !== undefined ? JSON.parse(localStorage.getItem('timer_options')) : null;
 	
@@ -189,29 +157,13 @@ function updateOptions() {
 			} else {
 				document.querySelector(`[name="${key}"]`).removeAttribute("checked");
 			}
+		} else {
+			document.querySelector("[name='seconds_display']").value = OPTIONS["seconds_display"];
 		}
 	});
 
 	updateLayout();
 	updateClockDisplay();
-}
-
-function updateLayout() {
-	// clock_right == place-bottom on mobile (< 640)
-	if(OPTIONS.clock_right) {
-		clockContainer.classList.remove("place-top", "md:place-left");
-		clockContainer.classList.add("place-bottom", "md:place-right");
-
-		timersContainer.classList.remove("place-bottom", "md:place-right");
-		timersContainer.classList.add("place-top", "md:place-left");
-
-	} else {
-		clockContainer.classList.remove("place-bottom", "md:place-right");
-		clockContainer.classList.add("place-top", "md:place-left");
-
-		timersContainer.classList.remove("place-top", "md:place-left");
-		timersContainer.classList.add("place-bottom", "md:place-right");
-	}
 }
 
 function updateClockDisplay() {
@@ -255,75 +207,6 @@ function updateClockDisplay() {
 	}
 }
 
-function updateTitle(idx, title) {
-	TIMER_INTERVALS[idx].title = title;
-
-	localTimers('save');
-}
-
-function formatDateTime(data, dateTime=false, getDate=false, string=false) {
-	let timeString = '', dateString = '';
-	let hour, minute, second, year, month, date;
-
-	if(data.h !== undefined) {
-		hour = data.h >= 10 ? data.h : `0${data.h}`;
-		minute = data.m >= 10 ? data.m : `0${data.m}`;
-		second = data.s >= 10 ? data.s : `0${data.s}`;
-
-		timeString = `${hour}:${minute}:${second}`;
-	}
-
-	if(getDate) {
-		d = new Date();
-		data.y = d.getFullYear();
-		data.n = d.getMonth() + 1,
-		data.d = d.getDate();
-	}
-
-	if(data.y !== undefined) {
-		year = data.y;
-		month = data.n >= 10 ? data.n : `0${data.n}`;
-		date = data.d >= 10 ? data.d : `0${data.d}`;
-
-		dateString = `${year}-${month}-${date}`;
-	}
-
-	if(string) {
-		if(dateTime) {
-			return `${dateString} ${timeString}`;
-
-		} else if(data.h !== undefined) {
-			return timeString;
-
-		} else if(data.y !== undefined) {
-			return dateString;
-
-		} else {
-			return JSON.stringify(data);
-
-		}
-
-	} else {
-		if(dateTime) {
-			return { hour, minute, second, year, month, date };
-
-		} else if(data.h !== undefined) {
-			return { hour, minute, second };
-
-		} else if(data.y !== undefined) {
-			return { year, month, date };
-
-		} else {
-			return data;
-
-		}
-
-	}
-}
-
-/**
- * INTERVAL FUNCTIONS
- */
 function showClockTime() {
 	let time = new Date();
 
@@ -391,32 +274,6 @@ function updateSecondsDisplay() {
 	}
 }
 
-function showTimerTime(target, idx) {
-	let time = TIMER_INTERVALS[idx];
-
-	if(time.s < 59) {
-		time.s++;
-	} else if(time.s >= 59 && time.m < 59) {
-		time.s = 0;
-		time.m++;
-	} else if(time.s >= 59 && time.m >= 59) {
-		time.s = 0;
-		time.m = 0;
-		time.h++
-	}
-
-	let res = formatDateTime(time);
-
-	TIMER_INTERVALS[idx] = {
-		...TIMER_INTERVALS[idx],
-		...time
-	}
-
-	localTimers('save');
-
-	target.innerText = `${res.hour}:${res.minute}:${res.second}`;
-}
-
 /**
  * CLICK HANDLERS
  */
@@ -441,7 +298,110 @@ document.querySelectorAll("input.opt-input").forEach(item => {
 document.querySelector("#seconds_display").addEventListener('change', (e) => {
 	updateOptions();
 });
+/**
+ * LAYOUT FUNCTIONS
+ */
+updateLayout();
 
+function updateLayout() {
+	// clock_right == place-bottom on mobile (< 640)
+	if(OPTIONS.clock_right) {
+		clockContainer.classList.remove("place-top", "md:place-left");
+		clockContainer.classList.add("place-bottom", "md:place-right");
+
+		timersContainer.classList.remove("place-bottom", "md:place-right");
+		timersContainer.classList.add("place-top", "md:place-left");
+
+	} else {
+		clockContainer.classList.remove("place-bottom", "md:place-right");
+		clockContainer.classList.add("place-top", "md:place-left");
+
+		timersContainer.classList.remove("place-top", "md:place-left");
+		timersContainer.classList.add("place-bottom", "md:place-right");
+	}
+}
+/**
+ * TABS
+ */
+const tabsNav = document.querySelector("#tabs");
+const inactiveColor = tabsNav.dataset["inactiveColor"];
+console.log(inactiveColor);
+
+document.querySelectorAll(".tab").forEach(tab => {
+	tab.addEventListener('click', function() {
+		const target = tab.dataset["content"];
+		const activeColor = tab.dataset["color"];
+
+		tab.classList.add("active", activeColor);
+		tab.classList.remove(inactiveColor);
+
+		let siblings = getSiblings(tab);
+		siblings.forEach(sib => {
+			sib.classList.remove("active", activeColor);
+			sib.classList.add(inactiveColor);
+		});
+
+		document.querySelectorAll(".tab-content").forEach(tabContent => {
+			if(tabContent.getAttribute("id") !== target && !tabContent.classList.contains("hidden")) {
+				tabContent.classList.add("hidden");
+			}
+
+			if(tabContent.getAttribute("id") === target && tabContent.classList.contains("hidden")) {
+				tabContent.classList.remove("hidden");
+			}
+		});
+	});
+});
+/**
+ * TIMERS
+ */
+function localTimers(action) {
+	let res;
+
+	if(action === "get") {
+		res = localStorage.getItem('timers') !== undefined ? JSON.parse(localStorage.getItem('timers')) : { message: 'no timers found' };
+	}
+
+	if(action === "set" || action === "save") {
+		localStorage.setItem('timers', JSON.stringify(TIMER_INTERVALS));
+		res = { message: 'saved timers' };
+	}
+
+	if(action === "clear") {
+		localStorage.removeItem('timers');
+		res = { message: 'timers removed' };
+	}
+
+	return res;
+}
+
+function updateTitle(idx, title) {
+	TIMER_INTERVALS[idx].title = title;
+
+	localTimers('save');
+}
+
+function showTimerTime(target, idx) {
+	let time = dayjs(TIMER_INTERVALS[idx].start);
+	let res = {
+		h: time.format('HH'),
+		m: time.format('mm'),
+		s: time.format('ss'),
+	};
+
+	TIMER_INTERVALS[idx] = {
+		...TIMER_INTERVALS[idx],
+		...res
+	}
+
+	localTimers('save');
+
+	target.innerText = `${res.hour}:${res.minute}:${res.second}`;
+}
+
+/**
+ * CLICK HANDLERS
+ */
 document.querySelectorAll(".timer").forEach(timer => {
 	const playPauseBtn = timer.querySelector(".play-pause > i");
 	const form = timer.querySelector("form");
@@ -457,18 +417,20 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 	TIMER_INTERVALS[idx] = {
 		title,
-		h: 0,
-		m: 0,
-		s: 0,
-		interval: null
+		h: dayjs().format('HH'),
+		m: dayjs().format('mm'),
+		s: dayjs().format('ss'),
+		interval: null,
+		start: dayjs().format('HH:mm:ss')
 	};
 
 	TIME_ENTRIES[idx] = {
 		title,
-		h: 0,
-		m: 0,
-		s: 0,
-		date: formatDateTime({}, true, true, true)
+		h: dayjs().format('HH'),
+		m: dayjs().format('mm'),
+		s: dayjs().format('ss'),
+		date: dayjs().format('YYYY-MM-DD'),
+		start: dayjs().format('HH:mm:ss'),
 	}
 
 	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
@@ -492,8 +454,10 @@ document.querySelectorAll(".timer").forEach(timer => {
 		saveTimeBtn.classList.remove("disabled");
 	}
 
-	const formattedTime = formatDateTime(TIMER_INTERVALS[idx], false, false, true);
-	timeContainer.innerText = formattedTime;
+	const startTime = dayjs(TIMER_INTERVALS[idx].start);
+	const currentTime = dayjs();
+	const d = startTime.diff(currentTime);
+	timeContainer.innerText = "TESTING";
 
 	playPauseBtn.addEventListener("click", function() {
 
@@ -530,12 +494,13 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 			TIMER_INTERVALS[idx] = {
 				...TIMER_INTERVALS[idx],
-				h: 0,
-				m: 0,
-				s: 0,
-				interval: null
+				h: dayjs().format('HH'),
+				m: dayjs().format('mm'),
+				s: dayjs().format('ss'),
+				interval: null,
+				end: dayjs().format('HH:mm:ss')
 			};
-			timeContainer.innerText = formatDateTime(TIMER_INTERVALS[idx], false, false, true);
+			timeContainer.innerText = "00:00:00";
 
 			localTimers('save');
 
@@ -556,7 +521,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 				...TIMER_INTERVALS[idx],
 				interval: null
 			};
-			timeContainer.innerText = formatDateTime(TIMER_INTERVALS[idx], false, false, true);
+			timeContainer.innerText = "00:00:00";
 
 			TIME_ENTRIES[idx] = {
 				...TIME_ENTRIES[idx],
@@ -581,24 +546,26 @@ document.querySelectorAll(".timer").forEach(timer => {
 		updateTitle(idx, e.target.value);
 	})
 });
+/**
+ * TIME ENTRIES
+ */
+function localTimeEntries(action) {
+	let res;
 
+	if(action === "get") {
+		res = localStorage.getItem('time_entries') !== undefined ? JSON.parse(localStorage.getItem('time_entries')) : { message: 'no time_entries found' };
+	}
 
-document.querySelectorAll(".tab").forEach(tab => {
-	tab.addEventListener('click', function() {
-		const target = tab.dataset["content"];
+	if(action === "set" || action === "save") {
+		localStorage.setItem('time_entries', JSON.stringify(TIME_ENTRIES));
+		res = { message: 'saved time entries' };
+	}
 
-		tab.classList.add("active");
-		let siblings = getSiblings(tab);
-		siblings.forEach(sib => { sib.classList.remove("active"); })
+	if(action === "clear") {
+		localStorage.removeItem('time_entries');
+		res = { message: 'timers removed' };
+	}
 
-		document.querySelectorAll(".tab-content").forEach(tabContent => {
-			if(tabContent.getAttribute("id") !== target && !tabContent.classList.contains("hidden")) {
-				tabContent.classList.add("hidden");
-			}
+	return res;
+}
 
-			if(tabContent.getAttribute("id") === target && tabContent.classList.contains("hidden")) {
-				tabContent.classList.remove("hidden");
-			}
-		});
-	});
-});

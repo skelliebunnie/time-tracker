@@ -51,9 +51,9 @@
 		<!-- TABS: TIMERS & TIME ENTRIES -->
 		<article id="tabbedContent" class="place-bottom md:place-right flex flex-col flex-1 items-start bg-neutral-800 text-light p-4">
 			<!-- TABS: NAV -->
-			<nav id="tabs" class="flex flex-0 flex-row flex-wrap justify-start items-stretch">
-				<span class="tab flex-grow-1 py-2 px-4 active" data-content="timers_container">Timers</span>
-				<span class="tab flex-grow-1 py-2 px-4" data-content="time_entries">Time Entries</span>
+			<nav id="tabs" class="flex flex-0 flex-row flex-wrap justify-start items-stretch" data-inactive-color="bg-neutral-600">
+				<span class="tab flex-grow-1 py-2 px-4 active bg-neutral-400" data-content="timers_container" data-color="bg-neutral-400">Timers</span>
+				<span class="tab flex-grow-1 py-2 px-4 bg-neutral-600" data-content="time_entries" data-color="bg-tertiary-200">Time Entries</span>
 			</nav>
 			<!-- TABS: CONTENT -->
 			<!-- timers -->
@@ -80,11 +80,12 @@
 				</div>
 			</section>
 			<!-- time entries -->
-			<section id="time_entries" class="tab-content flex flex-row flex-1 flex-wrap items-start w-full bg-tertiary-200 hidden" data-color="bg-tertiary-200">
+			<section id="time_entries" class="tab-content flex flex-row flex-1 flex-wrap items-start w-full bg-tertiary-200 hidden">
 				
 			</section>
 		</article>
 	</main>
+	<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
 	<script src="./js/scripts.js"></script>
 </body>
 </html>

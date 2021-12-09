@@ -88,8 +88,6 @@ h5, h6 { @apply italic; }
 }
 
 .tab {
-	@apply bg-neutral-600;
-
 	&.active {
 		@apply text-neutral-900;
 		z-index: 2;

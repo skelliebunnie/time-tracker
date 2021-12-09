@@ -1,21 +1,23 @@
-document.querySelectorAll(".tab").forEach(tab => {
-	tab.addEventListener('click', function() {
-		const target = tab.dataset["content"];
+/**
+ * TIME ENTRIES
+ */
+function localTimeEntries(action) {
+	let res;
 
-		tab.classList.add("active");
-		let siblings = getSiblings(tab);
-		siblings.forEach(sib => { sib.classList.remove("active"); })
+	if(action === "get") {
+		res = localStorage.getItem('time_entries') !== undefined ? JSON.parse(localStorage.getItem('time_entries')) : { message: 'no time_entries found' };
+	}
 
-		document.querySelectorAll(".tab-content").forEach(tabContent => {
-			if(tabContent.getAttribute("id") !== target && !tabContent.classList.contains("hidden")) {
-				tabContent.classList.add("hidden");
-				tab.classList.removeClass(tabContent.dataset["color"]);
-			}
+	if(action === "set" || action === "save") {
+		localStorage.setItem('time_entries', JSON.stringify(TIME_ENTRIES));
+		res = { message: 'saved time entries' };
+	}
 
-			if(tabContent.getAttribute("id") === target && tabContent.classList.contains("hidden")) {
-				tabContent.classList.remove("hidden");
-				tab.classList.add(tabContent.dataset["color"]);
-			}
-		});
-	});
-});
+	if(action === "clear") {
+		localStorage.removeItem('time_entries');
+		res = { message: 'timers removed' };
+	}
+
+	return res;
+}
+

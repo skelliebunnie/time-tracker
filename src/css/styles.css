@@ -71,15 +71,15 @@ h5, h6 {
 .add-timer {
   border-radius: 50%; }
 
-.tab {
-  @apply bg-neutral-600; }
-  .tab.active {
-    @apply bg-neutral-400 text-neutral-900;
-    z-index: 2; }
-  .tab:first-child.active {
-    box-shadow: 1px 0 2px -1px #5a5359; }
-  .tab:not(:first-child).active {
-    box-shadow: -1px 0 2px -1px #5a5359; }
+.tab.active {
+  @apply text-neutral-900;
+  z-index: 2; }
+
+.tab:first-child.active {
+  box-shadow: 1px 0 2px -1px #5a5359; }
+
+.tab:not(:first-child).active {
+  box-shadow: -1px 0 2px -1px #5a5359; }
 
 .tab-content {
   z-index: 5;
