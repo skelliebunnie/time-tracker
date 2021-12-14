@@ -3,7 +3,6 @@
  */
 const tabsNav = document.querySelector("#tabs");
 const inactiveColor = tabsNav.dataset["inactiveColor"];
-console.log(inactiveColor);
 
 document.querySelectorAll(".tab").forEach(tab => {
 	tab.addEventListener('click', function() {

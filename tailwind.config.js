@@ -21,7 +21,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'sans': ['Muli', 'ui-sans-serif', 'system-ui'],
-        'body': ['Muli', 'ui-sans-serif', 'system-ui']
+        'body': ['"Nunito Sans"', 'ui-sans-serif', 'system-ui']
       },
       fontSize: {
       	'xxs':  '0.5rem',
