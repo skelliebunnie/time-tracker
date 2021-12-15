@@ -13,3 +13,11 @@ function getChildren(n, skipMe){
 function getSiblings(n) {
     return getChildren(n.parentNode.firstChild, n);
 }
+
+function getTimeObject(seconds) {
+	return {
+		h: Math.floor(seconds / 3600),
+		m: Math.floor(seconds / 60 % 60),
+		s: Math.floor(seconds % 60)
+	};
+}

@@ -26,10 +26,11 @@ let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
 
 /** TIMERS **/
 let TIMER_INTERVALS = {};
-let storedTimers = localStorage.getItem('timers') ? JSON.parse(localStorage.getItem('timers')) : null;
+let storedTimers = localStorage.getItem('sktt_timers') ? JSON.parse(localStorage.getItem('sktt_timers')) : null;
 
 /** TIME ENTRIES **/
 let TIME_ENTRIES = {};
+let storedTimeEntries = localStorage.getItem('sktt_time_entries') ? JSON.parse(localStorage.getItem('sktt_time_entries')) : null;
 /**
  * GENERAL FUNCTIONS
  */
@@ -45,6 +46,14 @@ function getChildren(n, skipMe){
 function getSiblings(n) {
     return getChildren(n.parentNode.firstChild, n);
 }
+
+function getTimeObject(seconds) {
+	return {
+		h: Math.floor(seconds / 3600),
+		m: Math.floor(seconds / 60 % 60),
+		s: Math.floor(seconds % 60)
+	};
+}
 /**
  * TIMERS
  * idx: {
@@ -58,26 +67,20 @@ function localTimers(action) {
 	let res;
 
 	if(action === "get") {
-		res = localStorage.getItem('timers') !== undefined ? JSON.parse(localStorage.getItem('timers')) : { message: 'no timers found' };
+		res = localStorage.getItem('sktt_timers') !== undefined ? JSON.parse(localStorage.getItem('sktt_timers')) : { message: 'no timers found' };
 	}
 
 	if(action === "set" || action === "save") {
-		localStorage.setItem('timers', JSON.stringify(TIMER_INTERVALS));
+		localStorage.setItem('sktt_timers', JSON.stringify(TIMER_INTERVALS));
 		res = { message: 'saved timers' };
 	}
 
 	if(action === "clear") {
-		localStorage.removeItem('timers');
+		localStorage.removeItem('sktt_timers');
 		res = { message: 'timers removed' };
 	}
 
 	return res;
-}
-
-function updateTitle(idx, title) {
-	TIMER_INTERVALS[idx].title = title;
-
-	localTimers('save');
 }
 
 function showTimerTime(target, idx, update=false) {
@@ -86,11 +89,7 @@ function showTimerTime(target, idx, update=false) {
 		let currentTime = dayjs();
 		let diff = currentTime.diff(startTime, 'second', true);
 
-		let res = {
-			h: Math.floor(diff / 3600),
-			m: Math.floor(diff / 60 % 60),
-			s: Math.floor(diff % 60)
-		};
+		let res = getTimeObject(diff);
 
 		TIMER_INTERVALS[idx] = {
 			...TIMER_INTERVALS[idx],
@@ -103,17 +102,13 @@ function showTimerTime(target, idx, update=false) {
 
 	} else if(TIMER_INTERVALS[idx].secondsElapsed > 0) {
 		const s = TIMER_INTERVALS[idx].secondsElapsed;
-		let res = {
-			h: Math.floor(s / 3600),
-			m: Math.floor(s / 60 % 60),
-			s: Math.floor(s % 60)
-		};
+		let res = getTimeObject(s);
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
 
 	} else {
 		target.innerText = `00:00:00`;
-		
+
 	}
 }
 
@@ -127,11 +122,13 @@ function padTime(i) {
  */
 document.querySelectorAll(".timer").forEach(timer => {
 	const playPauseBtn = timer.querySelector(".play-pause > i");
-	const storedTimers = localTimers('get');
+	const addTimerBtn = timer.querySelector(".add-timer > i");
 	const idx = parseInt(timer.dataset['idx']);
 
 	let timeContainer = timer.querySelector(".time");
 	let title = timer.querySelector("[name='title']").value;
+
+	storedTimers = localTimers('get');
 
 	// set up Timer & Time Entry objects
 	TIMER_INTERVALS[idx] = {
@@ -143,12 +140,14 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 	TIME_ENTRIES[idx] = {
 		title,
-		date: dayjs().format('YYYY-MM-DD'),
+		created: dayjs(),
+		updated: dayjs(),
 		secondsElapsed: 0
 	};
 
 	// if there's a stored timer with the same ID, "merge" the data
-	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
+	// also check for secondsElapsed, in case old timers are stored
+	if(storedTimers !== null && !storedTimers.message && storedTimers[idx] && storedTimers[idx].secondsElapsed) {
 		TIMER_INTERVALS[idx] = {
 			...storedTimers[idx],
 			interval: null
@@ -194,6 +193,11 @@ document.querySelectorAll(".timer").forEach(timer => {
 			clearTimeBtn.classList.remove("disabled");
 			saveTimeBtn.classList.remove("disabled");
 		}
+	});
+
+	// TODO: handle creating a new timer
+	addTimerBtn.addEventListener("click", function() {
+		console.log("cloning timer:", idx);
 	});
 });
 /**
@@ -282,7 +286,7 @@ function updateCircle(sec=null) {
 }
 
 function updateOptions() {
-	let storedOptions = localStorage.getItem('timer_options') !== undefined ? JSON.parse(localStorage.getItem('timer_options')) : null;
+	let storedOptions = localStorage.getItem('sktt_timer_options') !== undefined ? JSON.parse(localStorage.getItem('sktt_timer_options')) : null;
 	
 	const currentOptions = {
 		show_seconds: document.querySelector("[name='show_seconds']").checked,
@@ -299,7 +303,7 @@ function updateOptions() {
 		OPTIONS = currentOptions;
 	}
 
-	localStorage.setItem('timer_options', JSON.stringify(OPTIONS));
+	localStorage.setItem('sktt_timer_options', JSON.stringify(OPTIONS));
 
 	Object.keys(OPTIONS).forEach(key => {
 		if(key !== 'seconds_display') {
@@ -449,6 +453,12 @@ document.querySelectorAll("input.opt-input").forEach(item => {
 document.querySelector("#seconds_display").addEventListener('change', (e) => {
 	updateOptions();
 });
+function updateTitle(idx, title) {
+	TIMER_INTERVALS[idx].title = title;
+
+	localTimers('save');
+}
+
 document.querySelectorAll(".timer").forEach(timer => {
 	const form = timer.querySelector("form");
 	const idx = parseInt(timer.dataset['idx']);
@@ -516,13 +526,13 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 			TIMER_INTERVALS[idx] = {
 				...TIMER_INTERVALS[idx],
-				end: dayjs(),
+				lastSaved: dayjs(),
 				interval: null
 			};
 
 			TIME_ENTRIES[idx] = {
 				...TIME_ENTRIES[idx],
-				end: dayjs(),
+				updated: dayjs(),
 				secondsElapsed: TIMER_INTERVALS[idx].secondsElapsed
 			}
 
@@ -571,52 +581,110 @@ function updateLayout() {
 const tabsNav = document.querySelector("#tabs");
 const inactiveColor = tabsNav.dataset["inactiveColor"];
 
+let tabTarget = "timers_container";
+if(localStorage.getItem('sktt_tab')) {
+	tabTarget = localStorage.getItem('sktt_tab');
+}
+
+handleTabs(tabTarget);
+
+function handleTabs(t) {
+	let tab = document.querySelectorAll(".tab")[0];
+	document.querySelectorAll(".tab").forEach(thisTab => {
+		if(thisTab.dataset["content"] === t) {
+			tab = thisTab;
+			return;
+		}
+	});
+	const target = tab.dataset["content"];
+	const activeColor = tab.dataset["color"];
+
+	tab.classList.add("active", activeColor);
+	tab.classList.remove(inactiveColor);
+
+	let siblings = getSiblings(tab);
+	siblings.forEach(sib => {
+		sib.classList.remove("active", activeColor);
+		sib.classList.add(inactiveColor);
+	});
+
+	document.querySelectorAll(".tab-content").forEach(tabContent => {
+		if(tabContent.getAttribute("id") !== target && !tabContent.classList.contains("hidden")) {
+			tabContent.classList.add("hidden");
+		}
+
+		if(tabContent.getAttribute("id") === target && tabContent.classList.contains("hidden")) {
+			tabContent.classList.remove("hidden");
+		}
+	});
+
+	localStorage.setItem("sktt_tab", target);
+}
+
 document.querySelectorAll(".tab").forEach(tab => {
 	tab.addEventListener('click', function() {
-		const target = tab.dataset["content"];
-		const activeColor = tab.dataset["color"];
-
-		tab.classList.add("active", activeColor);
-		tab.classList.remove(inactiveColor);
-
-		let siblings = getSiblings(tab);
-		siblings.forEach(sib => {
-			sib.classList.remove("active", activeColor);
-			sib.classList.add(inactiveColor);
-		});
-
-		document.querySelectorAll(".tab-content").forEach(tabContent => {
-			if(tabContent.getAttribute("id") !== target && !tabContent.classList.contains("hidden")) {
-				tabContent.classList.add("hidden");
-			}
-
-			if(tabContent.getAttribute("id") === target && tabContent.classList.contains("hidden")) {
-				tabContent.classList.remove("hidden");
-			}
-		});
+		handleTabs(tab.dataset["content"]);
 	});
 });
 /**
  * TIME ENTRIES
  */
+let timeEntries = document.querySelector("#time_entries tbody");
+
 function localTimeEntries(action) {
 	let res;
 
 	if(action === "get") {
-		res = localStorage.getItem('time_entries') !== undefined ? JSON.parse(localStorage.getItem('time_entries')) : { message: 'no time_entries found' };
+		res = localStorage.getItem('sktt_time_entries') !== undefined ? JSON.parse(localStorage.getItem('sktt_time_entries')) : { message: 'no time_entries found' };
 	}
 
 	if(action === "set" || action === "save") {
-		localStorage.setItem('time_entries', JSON.stringify(TIME_ENTRIES));
+		localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
 		res = { message: 'saved time entries' };
 	}
 
 	if(action === "clear") {
-		localStorage.removeItem('time_entries');
+		localStorage.removeItem('sktt_time_entries');
 		res = { message: 'timers removed' };
 	}
 
 	return res;
 }
 
-// TODO: display time entries in #time_entries
+function updateTimeEntries() {
+	storedTimeEntries = localTimeEntries("get");
+
+	if(storedTimeEntries !== null && Object.keys(storedTimeEntries).length > 0) {
+		Object.keys(storedTimeEntries).forEach(key => {
+			const storedEntry = storedTimeEntries[key];
+			const t = getTimeObject(storedEntry.secondsElapsed);
+
+			const entry = {
+				id: key,
+				title: storedEntry.title,
+				time: `${padTime(t.h)}:${padTime(t.m)}:${padTime(t.s)}`,
+				created: dayjs(storedEntry.created).format("YYYY-MM-DD HH:mm:ss"),
+				updated: dayjs(storedEntry.updated).format("YYYY-MM-DD HH:mm:ss")
+			}
+
+			let row = document.createElement("tr");
+
+			Object.keys(entry).forEach(k => {
+				let td = document.createElement("td");
+				td.innerText = entry[k];
+				row.append(td);
+			})
+
+			// clear table and re-add rows to avoid duplicates
+			timeEntries.innerHTML = "";
+			timeEntries.append(row);
+		});
+	}
+}
+updateTimeEntries();
+
+document.querySelectorAll(".tab").forEach(tab => {
+	if(tab.dataset["content"] === "time_entries") {
+		tab.addEventListener("click", updateTimeEntries);
+	}
+})

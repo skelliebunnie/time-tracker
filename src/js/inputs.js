@@ -1,3 +1,9 @@
+function updateTitle(idx, title) {
+	TIMER_INTERVALS[idx].title = title;
+
+	localTimers('save');
+}
+
 document.querySelectorAll(".timer").forEach(timer => {
 	const form = timer.querySelector("form");
 	const idx = parseInt(timer.dataset['idx']);
@@ -65,13 +71,13 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 			TIMER_INTERVALS[idx] = {
 				...TIMER_INTERVALS[idx],
-				end: dayjs(),
+				lastSaved: dayjs(),
 				interval: null
 			};
 
 			TIME_ENTRIES[idx] = {
 				...TIME_ENTRIES[idx],
-				end: dayjs(),
+				updated: dayjs(),
 				secondsElapsed: TIMER_INTERVALS[idx].secondsElapsed
 			}
 

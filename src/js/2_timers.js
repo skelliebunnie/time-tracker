@@ -11,26 +11,20 @@ function localTimers(action) {
 	let res;
 
 	if(action === "get") {
-		res = localStorage.getItem('timers') !== undefined ? JSON.parse(localStorage.getItem('timers')) : { message: 'no timers found' };
+		res = localStorage.getItem('sktt_timers') !== undefined ? JSON.parse(localStorage.getItem('sktt_timers')) : { message: 'no timers found' };
 	}
 
 	if(action === "set" || action === "save") {
-		localStorage.setItem('timers', JSON.stringify(TIMER_INTERVALS));
+		localStorage.setItem('sktt_timers', JSON.stringify(TIMER_INTERVALS));
 		res = { message: 'saved timers' };
 	}
 
 	if(action === "clear") {
-		localStorage.removeItem('timers');
+		localStorage.removeItem('sktt_timers');
 		res = { message: 'timers removed' };
 	}
 
 	return res;
-}
-
-function updateTitle(idx, title) {
-	TIMER_INTERVALS[idx].title = title;
-
-	localTimers('save');
 }
 
 function showTimerTime(target, idx, update=false) {
@@ -39,11 +33,7 @@ function showTimerTime(target, idx, update=false) {
 		let currentTime = dayjs();
 		let diff = currentTime.diff(startTime, 'second', true);
 
-		let res = {
-			h: Math.floor(diff / 3600),
-			m: Math.floor(diff / 60 % 60),
-			s: Math.floor(diff % 60)
-		};
+		let res = getTimeObject(diff);
 
 		TIMER_INTERVALS[idx] = {
 			...TIMER_INTERVALS[idx],
@@ -56,11 +46,7 @@ function showTimerTime(target, idx, update=false) {
 
 	} else if(TIMER_INTERVALS[idx].secondsElapsed > 0) {
 		const s = TIMER_INTERVALS[idx].secondsElapsed;
-		let res = {
-			h: Math.floor(s / 3600),
-			m: Math.floor(s / 60 % 60),
-			s: Math.floor(s % 60)
-		};
+		let res = getTimeObject(s);
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
 
@@ -80,11 +66,13 @@ function padTime(i) {
  */
 document.querySelectorAll(".timer").forEach(timer => {
 	const playPauseBtn = timer.querySelector(".play-pause > i");
-	const storedTimers = localTimers('get');
+	const addTimerBtn = timer.querySelector(".add-timer > i");
 	const idx = parseInt(timer.dataset['idx']);
 
 	let timeContainer = timer.querySelector(".time");
 	let title = timer.querySelector("[name='title']").value;
+
+	storedTimers = localTimers('get');
 
 	// set up Timer & Time Entry objects
 	TIMER_INTERVALS[idx] = {
@@ -96,7 +84,8 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 	TIME_ENTRIES[idx] = {
 		title,
-		date: dayjs().format('YYYY-MM-DD'),
+		created: dayjs(),
+		updated: dayjs(),
 		secondsElapsed: 0
 	};
 
@@ -148,5 +137,10 @@ document.querySelectorAll(".timer").forEach(timer => {
 			clearTimeBtn.classList.remove("disabled");
 			saveTimeBtn.classList.remove("disabled");
 		}
+	});
+
+	// TODO: handle creating a new timer
+	addTimerBtn.addEventListener("click", function() {
+		console.log("cloning timer:", idx);
 	});
 });

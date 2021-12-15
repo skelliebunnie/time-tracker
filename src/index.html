@@ -2,12 +2,18 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Standard Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <!-- For iPhone: -->
+  <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png">
+  <!-- Manifest -->
+  <link rel="manifest" href="/site.webmanifest">
 	<title>Time Tracker</title>
 	<link rel="stylesheet" href="./css/style.css">
 	<script src="https://kit.fontawesome.com/68e1458f78.js" crossorigin="anonymous"></script>
 </head>
-<body class='bg-neutral-300 flex flex-col items-stretch h-screen md:max-h-screen md:overflow-hidden font-body'>
-	<header class="flex-0 text-center bg-neutral-900 text-light">
+<body class='bg-neutral-300 flex flex-col items-stretch h-screen md:max-h-screen font-body'>
+	<header class="text-center bg-neutral-900 text-light">
 		<h1>Time Tracker</h1>
 		<ul class="flex max-w-5xl mx-auto my-6">
 			<li class="flex-0"><strong>Options:</strong></li>
@@ -34,7 +40,7 @@
 			</li>
 		</ul>
 	</header>
-	<main class="flex-1 grid grid-cols-1 md:grid-cols-2 items-stretch border-1 border-accent-400">
+	<main class="flex-auto grid grid-cols-1 md:grid-cols-2 items-stretch">
 		<!-- CLOCK -->
 		<article id="clock_container" class="place-top md:place-left relative flex flex-col flex-1 items-center justify-center text-dark text-center p-4 min-h-1/2 md:min-h-auto">
 			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-5xl lg:text-7xl mb-4 min-w-1/5"></h2>
@@ -80,10 +86,27 @@
 				</div>
 			</section>
 			<!-- time entries -->
-			<section id="time_entries" class="tab-content flex flex-row flex-1 flex-wrap items-start w-full bg-tertiary-200 hidden">
+			<section id="time_entries" class="tab-content flex flex-row flex-1 flex-wrap items-start w-full bg-tertiary-200 p-4 hidden">
+				<table class="w-full border border-solid border-tertiary-600">
+					<thead class="bg-tertiary-600 text-light">
+						<tr>
+							<th>ID</th>
+							<th>Title</th>
+							<th>Time Elapsed</th>
+							<th>Created</th>
+							<th>Updated</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
 			</section>
 		</article>
 	</main>
+	<footer class="flex flex-row flex-wrap justify-center items-center bg-neutral-900 text-light text-xs p-4">
+		<div class="text-center">
+			Favicon icon made by <a href="https://www.flaticon.com/authors/flat-icons-com" title="Flat-icons-com">Flat-icons-com</a>
+		</div>
+	</footer>
 	<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
 	<script src="./js/scripts.js"></script>
 </body>

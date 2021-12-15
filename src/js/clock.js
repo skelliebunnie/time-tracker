@@ -84,7 +84,7 @@ function updateCircle(sec=null) {
 }
 
 function updateOptions() {
-	let storedOptions = localStorage.getItem('timer_options') !== undefined ? JSON.parse(localStorage.getItem('timer_options')) : null;
+	let storedOptions = localStorage.getItem('sktt_timer_options') !== undefined ? JSON.parse(localStorage.getItem('sktt_timer_options')) : null;
 	
 	const currentOptions = {
 		show_seconds: document.querySelector("[name='show_seconds']").checked,
@@ -101,7 +101,7 @@ function updateOptions() {
 		OPTIONS = currentOptions;
 	}
 
-	localStorage.setItem('timer_options', JSON.stringify(OPTIONS));
+	localStorage.setItem('sktt_timer_options', JSON.stringify(OPTIONS));
 
 	Object.keys(OPTIONS).forEach(key => {
 		if(key !== 'seconds_display') {

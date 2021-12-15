@@ -24,11 +24,11 @@ const uglify = require('gulp-terser');//To Minify JS files
 const imagemin = require('gulp-imagemin'); //To Optimize Images
 const cleanCSS = require('gulp-clean-css');//To Minify CSS files
 const purgecss = require('gulp-purgecss');// Remove Unused CSS from Styles
+const logSymbols = require('log-symbols'); //For Symbolic Console logs (e.g. i for "information")
 
 //Note : Webp still not supported in major browsers including forefox
 //const webp = require('gulp-webp'); //For converting images to WebP format
 //const replace = require('gulp-replace'); //For Replacing img formats to webp in html
-const logSymbols = require('log-symbols'); //For Symbolic Console logs :) :P 
 
 //Load Previews on Browser on dev
 function livePreview(done){
@@ -50,7 +50,12 @@ function previewReload(done){
 
 //Development Tasks
 function devHTML(){
-  return src(`${options.paths.src.base}/**/*.html`).pipe(dest(options.paths.dist.base));
+  return src([
+	  	`${options.paths.src.base}/**/*.html`, 
+	  	`${options.paths.src.base}/site.webmanifest`, 
+	  	`${options.paths.src.base}/favicon.ico`, 
+	  	`${options.paths.src.base}/*.png`
+  	]).pipe(dest(options.paths.dist.base));
 } 
 
 function devStyles(){

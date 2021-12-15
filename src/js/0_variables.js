@@ -26,7 +26,8 @@ let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
 
 /** TIMERS **/
 let TIMER_INTERVALS = {};
-let storedTimers = localStorage.getItem('timers') ? JSON.parse(localStorage.getItem('timers')) : null;
+let storedTimers = localStorage.getItem('sktt_timers') ? JSON.parse(localStorage.getItem('sktt_timers')) : null;
 
 /** TIME ENTRIES **/
 let TIME_ENTRIES = {};
+let storedTimeEntries = localStorage.getItem('sktt_time_entries') ? JSON.parse(localStorage.getItem('sktt_time_entries')) : null;

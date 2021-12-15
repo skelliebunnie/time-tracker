@@ -9,10 +9,11 @@
   --font-size-7: 5.25rem;
   --font-size-8: 5.8rem; }
 
-body {
-  height: 100vh;
-  display: flex;
-  flex-flow: column nowrap; }
+a {
+  @apply text-accent-600 hover:text-accent-700; }
+
+.text-light a {
+  @apply text-accent-400 hover:text-accent-500; }
 
 h1 {
   @apply text-4xl md:text-5xl lg:text-6xl font-bold; }
@@ -86,3 +87,16 @@ h5, h6 {
   z-index: 5;
   top: -1px;
   min-height: 16px; }
+
+#time_entries table tr {
+  display: grid;
+  grid-template-columns: .5fr 1.25fr 1.25fr 2fr 2fr; }
+  #time_entries table tr:nth-child(even) {
+    @apply bg-tertiary-300; }
+  #time_entries table tr th,
+  #time_entries table tr td {
+    @apply text-center; }
+  #time_entries table tr th {
+    @apply p-2 text-lg; }
+  #time_entries table tr td {
+    @apply p-1; }
