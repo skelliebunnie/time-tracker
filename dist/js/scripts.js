@@ -101,7 +101,7 @@ function showTimerTime(target, idx, update=false) {
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
 
-	} else {
+	} else if(TIMER_INTERVALS[idx].secondsElapsed > 0) {
 		const s = TIMER_INTERVALS[idx].secondsElapsed;
 		let res = {
 			h: Math.floor(s / 3600),
@@ -110,6 +110,10 @@ function showTimerTime(target, idx, update=false) {
 		};
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
+
+	} else {
+		target.innerText = `00:00:00`;
+		
 	}
 }
 
