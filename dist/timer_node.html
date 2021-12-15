@@ -1,0 +1,20 @@
+<div class="timer flex-1 bg-primary-300 p-4 m-2 text-dark text-center relative" data-idx="0">
+	<header class="flex flex-row items-center justify-around">
+		<h3 class="flex-1">
+			<form class="form mb-0">
+				<input type="text" class="title-input text-center w-11/12 p-2 text-3xl leading-10 bg-primary-300 hover:bg-primary-200 active:bg-primary-200" name="title" value="Title">
+			</form>
+		</h3>
+		<span class="add-timer absolute -top-3 -left-4 mr-3 cursor-pointer align-top">
+			<i class="fad fa-plus-circle text-4xl text-secondary-500 hover:text-secondary-700"></i>
+		</span>
+	</header>
+	<main>
+		<span class="play-pause inline-block m-4" data-playing="false"><i class="fad fa-play-circle text-9xl cursor-pointer"></i></span>
+	</main>
+	<footer class="time-container ml-5 flex flex-row justify-around items-center">
+		<p class="flex-1 time text-2xl inline-block pl-14 align-middle">00:00:00</p>
+		<i class="fas fa-save text-xl align-middle cursor-pointer save-time text-success-500 mx-3 disabled"></i>
+		<i class="fas fa-trash-alt text-xl align-middle cursor-pointer clear-time text-error-500 mx-3 disabled"></i>
+	</footer>
+</div>

@@ -7,6 +7,19 @@
  * 	interval: function()
  * }
  */
+
+// check for stored timers, and if none found add a starting one
+// otherwise, load up the saved timers
+if(storedTimers === null) {
+	let idx = uuidv4();
+	buildTimer(idx);
+
+} else {
+	Object.keys(storedTimers).forEach(key => {
+		buildTimer(key);
+	});
+}
+
 function localTimers(action) {
 	let res;
 
@@ -61,86 +74,121 @@ function padTime(i) {
 	return i;
 }
 
-/**
- * CLICK HANDLERS
- */
-document.querySelectorAll(".timer").forEach(timer => {
-	const playPauseBtn = timer.querySelector(".play-pause > i");
-	const addTimerBtn = timer.querySelector(".add-timer > i");
-	const idx = parseInt(timer.dataset['idx']);
+function updateData(idx) {
+	let timer, timeContainer, title;
+	storedTimers = localTimers("get");
 
-	let timeContainer = timer.querySelector(".time");
-	let title = timer.querySelector("[name='title']").value;
+	// if data for the idx exists in localStorage, use that
+	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
 
-	storedTimers = localTimers('get');
-
-	// set up Timer & Time Entry objects
-	TIMER_INTERVALS[idx] = {
-		title,
-		interval: null,
-		start: dayjs(),
-		secondsElapsed: 0
-	};
-
-	TIME_ENTRIES[idx] = {
-		title,
-		created: dayjs(),
-		updated: dayjs(),
-		secondsElapsed: 0
-	};
-
-	// if there's a stored timer with the same ID, "merge" the data
-	// also check for secondsElapsed, in case old timers are stored
-	if(storedTimers !== null && !storedTimers.message && storedTimers[idx] && storedTimers[idx].secondsElapsed) {
 		TIMER_INTERVALS[idx] = {
 			...storedTimers[idx],
 			interval: null
 		};
 
-		title = TIMER_INTERVALS[idx].title;
+		if(storedTimeEntries !== null && storedTimeEntries[idx]) {
+			TIME_ENTRIES[idx] = { ...storedTimeEntries[idx] };
+		}
+
+	} else {
+		// otherwise, set up new data
+		TIMER_INTERVALS[idx] = {
+			title: `timer-${idx.substring(0,5)}`,
+			interval: null,
+			start: dayjs(),
+			secondsElapsed: 0
+		};
+
+		TIME_ENTRIES[idx] = {
+			title: `timer-${idx.substring(0,5)}`,
+			created: dayjs(),
+			updated: dayjs(),
+			secondsElapsed: 0
+		};
+
+		localTimers("save");
 	}
 
-	localTimers('save');
-	
-	// set up for displaying "count-up" time
-	showTimerTime(timeContainer, idx);
-
-	// handle starting/stopping timer
-	playPauseBtn.addEventListener("click", function() {
-
-		const playing = playPauseBtn.dataset.playing;
-
-		// if playing is true, then we need to PAUSE
-		if(playing === "true") {
-			playPauseBtn.dataset.playing = "false";
-			playPauseBtn.classList.add("fa-play-circle");
-			playPauseBtn.classList.remove("fa-pause-circle");
-
-			clearInterval(TIMER_INTERVALS[idx].interval);
-
-		} else {
-			playPauseBtn.dataset.playing = "true";
-			playPauseBtn.classList.remove("fa-play-circle");
-			playPauseBtn.classList.add("fa-pause-circle");
-
-			// reset "start" time for accurate counting after pause
-			// subtracting secondsElapsed to continue count-up correctly
-			TIMER_INTERVALS[idx].start = dayjs().subtract(TIMER_INTERVALS[idx].secondsElapsed, 'seconds');
-
-			TIMER_INTERVALS[idx].interval = setInterval(function() {
-					showTimerTime(timeContainer, idx, true);
-				}, 500);
-
-			let clearTimeBtn = timer.querySelector(".clear-time");
-			let saveTimeBtn = timer.querySelector(".save-time");
-
-			clearTimeBtn.classList.remove("disabled");
-			saveTimeBtn.classList.remove("disabled");
+	document.querySelectorAll(".timer").forEach(t => {
+		if(t.dataset["idx"] === idx) {
+			timer = t;
+			timeContainer = t.querySelector(".time");
+			title = t.querySelector("[name='title']").value;
 		}
 	});
 
-	// TODO: handle creating a new timer
-	addTimerBtn.addEventListener("click", function() {
-		console.log("cloning timer:", idx);
-	});
-});
+	// if we can find the timer on the page, show the time elapsed
+	if(timer !== undefined) {
+		showTimerTime(timeContainer, idx);
+
+	}
+}
+
+function buildTimer(idx) {
+	if(idx !== undefined) {
+		let template = document.querySelector("#timerTemplate");
+		let timer = template.content.cloneNode(true);
+		timer.querySelector(".timer").dataset["idx"] = idx;
+
+		let formContent = timer.querySelector(".form").innerHTML;
+		timer.querySelector(".form").innerHTML = formContent.replace("${title}", `timer-${idx.substring(0,5)}`);
+
+		const playPauseBtn = timer.querySelector(".play-pause > i");
+		const removeTimerBtn = timer.querySelector(".remove-timer > i");
+
+		let clearTimeBtn = timer.querySelector(".clear-time");
+		let saveTimeBtn = timer.querySelector(".save-time");
+
+		let timeContainer = timer.querySelector(".time");
+
+		// handle starting/stopping timer
+		playPauseBtn.addEventListener("click", function() {
+			const playing = playPauseBtn.dataset.playing;
+
+			// if playing is true, then we need to PAUSE
+			if(playing === "true") {
+				playPauseBtn.dataset.playing = "false";
+				playPauseBtn.classList.add("fa-play-circle");
+				playPauseBtn.classList.remove("fa-pause-circle");
+
+				clearInterval(TIMER_INTERVALS[idx].interval);
+
+			} else {
+				playPauseBtn.dataset.playing = "true";
+				playPauseBtn.classList.remove("fa-play-circle");
+				playPauseBtn.classList.add("fa-pause-circle");
+
+				// reset "start" time for accurate counting after pause
+				// subtracting secondsElapsed to continue count-up correctly
+				TIMER_INTERVALS[idx].start = TIMER_INTERVALS[idx].secondsElapsed > 0 ? dayjs().subtract(TIMER_INTERVALS[idx].secondsElapsed, 'seconds') : dayjs();
+
+				TIMER_INTERVALS[idx].interval = setInterval(function() {
+						showTimerTime(timeContainer, idx, true);
+					}, 500);
+
+				clearTimeBtn.classList.remove("disabled");
+				saveTimeBtn.classList.remove("disabled");
+			}
+		});
+
+		removeTimerBtn.addEventListener("click", function() {
+			let timer;
+			document.querySelectorAll(".timer").forEach(t => {
+				if(t.dataset["idx"] === idx) {
+					timer = t;
+				}
+			});
+			console.log(timer)
+
+			if(timer) {
+				timer.remove();
+			}
+
+			delete(TIMER_INTERVALS[idx]);
+			localTimers("save");
+		});
+
+		timersContainer.append(timer);
+		updateData(idx);
+	}
+}

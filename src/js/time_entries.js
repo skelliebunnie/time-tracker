@@ -11,6 +11,10 @@ function localTimeEntries(action) {
 	}
 
 	if(action === "set" || action === "save") {
+		Object.keys(TIME_ENTRIES).forEach(key => {
+			if(!TIME_ENTRIES[key].title) delete TIME_ENTRIES[key];
+		});
+
 		localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
 		res = { message: 'saved time entries' };
 	}
@@ -27,28 +31,44 @@ function updateTimeEntries() {
 	storedTimeEntries = localTimeEntries("get");
 
 	if(storedTimeEntries !== null && Object.keys(storedTimeEntries).length > 0) {
+		timeEntries.innerHTML = "";
+		
 		Object.keys(storedTimeEntries).forEach(key => {
 			const storedEntry = storedTimeEntries[key];
 			const t = getTimeObject(storedEntry.secondsElapsed);
 
+			let row = document.createElement("tr");
+			row.setAttribute("id", `te-${key}`);
+
 			const entry = {
-				id: key,
 				title: storedEntry.title,
 				time: `${padTime(t.h)}:${padTime(t.m)}:${padTime(t.s)}`,
 				created: dayjs(storedEntry.created).format("YYYY-MM-DD HH:mm:ss"),
 				updated: dayjs(storedEntry.updated).format("YYYY-MM-DD HH:mm:ss")
 			}
 
-			let row = document.createElement("tr");
-
 			Object.keys(entry).forEach(k => {
 				let td = document.createElement("td");
 				td.innerText = entry[k];
 				row.append(td);
-			})
+			});
+
+			let removeTd = document.createElement("td");
+			let removeBtn = document.createElement("i");
+			removeBtn.classList.add("remove-time-entry", "fad", "fa-minus-square", "text-4xl", "text-accent-500", "hover:text-accent-700");
+
+			removeBtn.addEventListener("click", function() {
+				let r = document.querySelector(`#te-${key}`);
+				r.remove();
+
+				delete TIME_ENTRIES[key];
+				localTimeEntries("save");
+			});
+
+			removeTd.append(removeBtn);
+			row.append(removeTd);
 
 			// clear table and re-add rows to avoid duplicates
-			timeEntries.innerHTML = "";
 			timeEntries.append(row);
 		});
 	}
@@ -59,4 +79,10 @@ document.querySelectorAll(".tab").forEach(tab => {
 	if(tab.dataset["content"] === "time_entries") {
 		tab.addEventListener("click", updateTimeEntries);
 	}
-})
+});
+
+document.querySelectorAll(".timer").forEach(timer => {
+	timer.querySelector(".form").addEventListener("submit", updateTimeEntries);
+
+	timer.querySelector(".title-input").addEventListener("blur", updateTimeEntries);
+});

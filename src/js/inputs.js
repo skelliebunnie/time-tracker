@@ -1,12 +1,20 @@
 function updateTitle(idx, title) {
 	TIMER_INTERVALS[idx].title = title;
-
 	localTimers('save');
+
+	if(TIME_ENTRIES[idx]) {
+		TIME_ENTRIES[idx].title = title;
+	}
+
+	storedTimeEntries = localTimeEntries("get");
+	if(storedTimeEntries[idx]) {
+		localTimeEntries("save");
+	}
 }
 
 document.querySelectorAll(".timer").forEach(timer => {
 	const form = timer.querySelector("form");
-	const idx = parseInt(timer.dataset['idx']);
+	const idx = timer.dataset['idx'];
 	const storedTimers = localTimers('get');
 	const playPauseBtn = timer.querySelector(".play-pause > i");
 
@@ -23,7 +31,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 			interval: null
 		};
 
-		title = TIMER_INTERVALS[idx].title;
+		title = TIMER_INTERVALS[idx].title !== storedTimers[idx].title ? storedTimers[idx].title : TIMER_INTERVALS[idx].title;
 	}
 
 	// update title in input field
@@ -31,7 +39,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 		timer.querySelector("[name='title']").value = title;
 	}
 	// disable save/clear buttons if at least one time is greater than 0
-	if(TIMER_INTERVALS[idx].secondsElapsed > 0) {
+	if(TIMER_INTERVALS[idx] && TIMER_INTERVALS[idx].secondsElapsed > 0) {
 		clearTimeBtn.classList.remove("disabled");
 		saveTimeBtn.classList.remove("disabled");
 	}
@@ -74,14 +82,14 @@ document.querySelectorAll(".timer").forEach(timer => {
 				lastSaved: dayjs(),
 				interval: null
 			};
+			localTimers('save');
 
 			TIME_ENTRIES[idx] = {
-				...TIME_ENTRIES[idx],
+				title:  title,
+				created: dayjs(),
 				updated: dayjs(),
 				secondsElapsed: TIMER_INTERVALS[idx].secondsElapsed
 			}
-
-			localTimers('save');
 			localTimeEntries('save');
 		}
 	});
@@ -97,4 +105,10 @@ document.querySelectorAll(".timer").forEach(timer => {
 	form.querySelector("input").addEventListener("blur", function(e) {
 		updateTitle(idx, e.target.value);
 	});
+});
+
+const addTimerBtn = document.querySelector(".add-timer");
+addTimerBtn.addEventListener("click", function() {
+	let newTimerIndex = uuidv4();
+	buildTimer(newTimerIndex);
 });

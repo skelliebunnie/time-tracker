@@ -40,6 +40,10 @@ h5, h6 {
 .disabled {
   @apply text-neutral-600 cursor-default; }
 
+@media (min-width: 768px) {
+  #main {
+    grid-template-columns: 1fr 2fr; } }
+
 .place-top,
 \.md\:place-left {
   @apply row-start-1 col-start-1; }
@@ -64,14 +68,14 @@ h5, h6 {
     transform-origin: center;
     transform: rotate(-90deg); }
 
+.timer {
+  min-width: 25%; }
+
 .clear-time:not(.disabled):hover {
   @apply text-error-700; }
 
 .save-time:not(.disabled):hover {
   @apply text-success-700; }
-
-.add-timer {
-  border-radius: 50%; }
 
 .tab.active {
   @apply text-neutral-900;
@@ -90,7 +94,9 @@ h5, h6 {
 
 #time_entries table tr {
   display: grid;
-  grid-template-columns: .5fr 1.25fr 1.25fr 2fr 2fr; }
+  grid-template-columns: 1.25fr 1.25fr 2fr 2fr .5fr;
+  align-items: center;
+  justify-content: center; }
   #time_entries table tr:nth-child(even) {
     @apply bg-tertiary-300; }
   #time_entries table tr th,

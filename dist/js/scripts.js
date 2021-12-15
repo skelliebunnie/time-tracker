@@ -1,4 +1,5 @@
 const clockContainer = document.querySelector("#clock_container");
+const tabbedContentContainer = document.querySelector("#tabbedContent");
 const timersContainer = document.querySelector("#timers_container");
 
 /** CLOCK **/
@@ -63,6 +64,19 @@ function getTimeObject(seconds) {
  * 	interval: function()
  * }
  */
+
+// check for stored timers, and if none found add a starting one
+// otherwise, load up the saved timers
+if(storedTimers === null) {
+	let idx = uuidv4();
+	buildTimer(idx);
+
+} else {
+	Object.keys(storedTimers).forEach(key => {
+		buildTimer(key);
+	});
+}
+
 function localTimers(action) {
 	let res;
 
@@ -117,89 +131,125 @@ function padTime(i) {
 	return i;
 }
 
-/**
- * CLICK HANDLERS
- */
-document.querySelectorAll(".timer").forEach(timer => {
-	const playPauseBtn = timer.querySelector(".play-pause > i");
-	const addTimerBtn = timer.querySelector(".add-timer > i");
-	const idx = parseInt(timer.dataset['idx']);
+function updateData(idx) {
+	let timer, timeContainer, title;
+	storedTimers = localTimers("get");
 
-	let timeContainer = timer.querySelector(".time");
-	let title = timer.querySelector("[name='title']").value;
+	// if data for the idx exists in localStorage, use that
+	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
 
-	storedTimers = localTimers('get');
-
-	// set up Timer & Time Entry objects
-	TIMER_INTERVALS[idx] = {
-		title,
-		interval: null,
-		start: dayjs(),
-		secondsElapsed: 0
-	};
-
-	TIME_ENTRIES[idx] = {
-		title,
-		created: dayjs(),
-		updated: dayjs(),
-		secondsElapsed: 0
-	};
-
-	// if there's a stored timer with the same ID, "merge" the data
-	// also check for secondsElapsed, in case old timers are stored
-	if(storedTimers !== null && !storedTimers.message && storedTimers[idx] && storedTimers[idx].secondsElapsed) {
 		TIMER_INTERVALS[idx] = {
 			...storedTimers[idx],
 			interval: null
 		};
 
-		title = TIMER_INTERVALS[idx].title;
+		if(storedTimeEntries !== null && storedTimeEntries[idx]) {
+			TIME_ENTRIES[idx] = { ...storedTimeEntries[idx] };
+		}
+
+	} else {
+		// otherwise, set up new data
+		TIMER_INTERVALS[idx] = {
+			title: `timer-${idx.substring(0,5)}`,
+			interval: null,
+			start: dayjs(),
+			secondsElapsed: 0
+		};
+
+		TIME_ENTRIES[idx] = {
+			title: `timer-${idx.substring(0,5)}`,
+			created: dayjs(),
+			updated: dayjs(),
+			secondsElapsed: 0
+		};
+
+		localTimers("save");
 	}
 
-	localTimers('save');
-	
-	// set up for displaying "count-up" time
-	showTimerTime(timeContainer, idx);
-
-	// handle starting/stopping timer
-	playPauseBtn.addEventListener("click", function() {
-
-		const playing = playPauseBtn.dataset.playing;
-
-		// if playing is true, then we need to PAUSE
-		if(playing === "true") {
-			playPauseBtn.dataset.playing = "false";
-			playPauseBtn.classList.add("fa-play-circle");
-			playPauseBtn.classList.remove("fa-pause-circle");
-
-			clearInterval(TIMER_INTERVALS[idx].interval);
-
-		} else {
-			playPauseBtn.dataset.playing = "true";
-			playPauseBtn.classList.remove("fa-play-circle");
-			playPauseBtn.classList.add("fa-pause-circle");
-
-			// reset "start" time for accurate counting after pause
-			// subtracting secondsElapsed to continue count-up correctly
-			TIMER_INTERVALS[idx].start = dayjs().subtract(TIMER_INTERVALS[idx].secondsElapsed, 'seconds');
-
-			TIMER_INTERVALS[idx].interval = setInterval(function() {
-					showTimerTime(timeContainer, idx, true);
-				}, 500);
-
-			let clearTimeBtn = timer.querySelector(".clear-time");
-			let saveTimeBtn = timer.querySelector(".save-time");
-
-			clearTimeBtn.classList.remove("disabled");
-			saveTimeBtn.classList.remove("disabled");
+	document.querySelectorAll(".timer").forEach(t => {
+		if(t.dataset["idx"] === idx) {
+			timer = t;
+			timeContainer = t.querySelector(".time");
+			title = t.querySelector("[name='title']").value;
 		}
 	});
 
-	// TODO: handle creating a new timer
-	addTimerBtn.addEventListener("click", function() {
-		console.log("cloning timer:", idx);
-	});
-});
+	// if we can find the timer on the page, show the time elapsed
+	if(timer !== undefined) {
+		showTimerTime(timeContainer, idx);
+
+	}
+}
+
+function buildTimer(idx) {
+	if(idx !== undefined) {
+		let template = document.querySelector("#timerTemplate");
+		let timer = template.content.cloneNode(true);
+		timer.querySelector(".timer").dataset["idx"] = idx;
+
+		let formContent = timer.querySelector(".form").innerHTML;
+		timer.querySelector(".form").innerHTML = formContent.replace("${title}", `timer-${idx.substring(0,5)}`);
+
+		const playPauseBtn = timer.querySelector(".play-pause > i");
+		const removeTimerBtn = timer.querySelector(".remove-timer > i");
+
+		let clearTimeBtn = timer.querySelector(".clear-time");
+		let saveTimeBtn = timer.querySelector(".save-time");
+
+		let timeContainer = timer.querySelector(".time");
+
+		// handle starting/stopping timer
+		playPauseBtn.addEventListener("click", function() {
+			const playing = playPauseBtn.dataset.playing;
+
+			// if playing is true, then we need to PAUSE
+			if(playing === "true") {
+				playPauseBtn.dataset.playing = "false";
+				playPauseBtn.classList.add("fa-play-circle");
+				playPauseBtn.classList.remove("fa-pause-circle");
+
+				clearInterval(TIMER_INTERVALS[idx].interval);
+
+			} else {
+				playPauseBtn.dataset.playing = "true";
+				playPauseBtn.classList.remove("fa-play-circle");
+				playPauseBtn.classList.add("fa-pause-circle");
+
+				// reset "start" time for accurate counting after pause
+				// subtracting secondsElapsed to continue count-up correctly
+				TIMER_INTERVALS[idx].start = TIMER_INTERVALS[idx].secondsElapsed > 0 ? dayjs().subtract(TIMER_INTERVALS[idx].secondsElapsed, 'seconds') : dayjs();
+
+				TIMER_INTERVALS[idx].interval = setInterval(function() {
+						showTimerTime(timeContainer, idx, true);
+					}, 500);
+
+				clearTimeBtn.classList.remove("disabled");
+				saveTimeBtn.classList.remove("disabled");
+			}
+		});
+
+		removeTimerBtn.addEventListener("click", function() {
+			let timer;
+			document.querySelectorAll(".timer").forEach(t => {
+				if(t.dataset["idx"] === idx) {
+					timer = t;
+				}
+			});
+			console.log(timer)
+
+			if(timer) {
+				timer.remove();
+			}
+
+			delete(TIMER_INTERVALS[idx]);
+			localTimers("save");
+		});
+
+		timersContainer.append(timer);
+		updateData(idx);
+	}
+}
+
 /**
  * CLOCK FUNCTIONS
  */
@@ -455,13 +505,21 @@ document.querySelector("#seconds_display").addEventListener('change', (e) => {
 });
 function updateTitle(idx, title) {
 	TIMER_INTERVALS[idx].title = title;
-
 	localTimers('save');
+
+	if(TIME_ENTRIES[idx]) {
+		TIME_ENTRIES[idx].title = title;
+	}
+
+	storedTimeEntries = localTimeEntries("get");
+	if(storedTimeEntries[idx]) {
+		localTimeEntries("save");
+	}
 }
 
 document.querySelectorAll(".timer").forEach(timer => {
 	const form = timer.querySelector("form");
-	const idx = parseInt(timer.dataset['idx']);
+	const idx = timer.dataset['idx'];
 	const storedTimers = localTimers('get');
 	const playPauseBtn = timer.querySelector(".play-pause > i");
 
@@ -478,7 +536,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 			interval: null
 		};
 
-		title = TIMER_INTERVALS[idx].title;
+		title = TIMER_INTERVALS[idx].title !== storedTimers[idx].title ? storedTimers[idx].title : TIMER_INTERVALS[idx].title;
 	}
 
 	// update title in input field
@@ -486,7 +544,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 		timer.querySelector("[name='title']").value = title;
 	}
 	// disable save/clear buttons if at least one time is greater than 0
-	if(TIMER_INTERVALS[idx].secondsElapsed > 0) {
+	if(TIMER_INTERVALS[idx] && TIMER_INTERVALS[idx].secondsElapsed > 0) {
 		clearTimeBtn.classList.remove("disabled");
 		saveTimeBtn.classList.remove("disabled");
 	}
@@ -529,14 +587,14 @@ document.querySelectorAll(".timer").forEach(timer => {
 				lastSaved: dayjs(),
 				interval: null
 			};
+			localTimers('save');
 
 			TIME_ENTRIES[idx] = {
-				...TIME_ENTRIES[idx],
+				title:  title,
+				created: dayjs(),
 				updated: dayjs(),
 				secondsElapsed: TIMER_INTERVALS[idx].secondsElapsed
 			}
-
-			localTimers('save');
 			localTimeEntries('save');
 		}
 	});
@@ -553,6 +611,12 @@ document.querySelectorAll(".timer").forEach(timer => {
 		updateTitle(idx, e.target.value);
 	});
 });
+
+const addTimerBtn = document.querySelector(".add-timer");
+addTimerBtn.addEventListener("click", function() {
+	let newTimerIndex = uuidv4();
+	buildTimer(newTimerIndex);
+});
 /**
  * LAYOUT FUNCTIONS
  */
@@ -564,15 +628,15 @@ function updateLayout() {
 		clockContainer.classList.remove("place-top", "md:place-left");
 		clockContainer.classList.add("place-bottom", "md:place-right");
 
-		timersContainer.classList.remove("place-bottom", "md:place-right");
-		timersContainer.classList.add("place-top", "md:place-left");
+		tabbedContentContainer.classList.remove("place-bottom", "md:place-right");
+		tabbedContentContainer.classList.add("place-top", "md:place-left");
 
 	} else {
 		clockContainer.classList.remove("place-bottom", "md:place-right");
 		clockContainer.classList.add("place-top", "md:place-left");
 
-		timersContainer.classList.remove("place-top", "md:place-left");
-		timersContainer.classList.add("place-bottom", "md:place-right");
+		tabbedContentContainer.classList.remove("place-top", "md:place-left");
+		tabbedContentContainer.classList.add("place-bottom", "md:place-right");
 	}
 }
 /**
@@ -639,6 +703,10 @@ function localTimeEntries(action) {
 	}
 
 	if(action === "set" || action === "save") {
+		Object.keys(TIME_ENTRIES).forEach(key => {
+			if(!TIME_ENTRIES[key].title) delete TIME_ENTRIES[key];
+		});
+
 		localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
 		res = { message: 'saved time entries' };
 	}
@@ -655,28 +723,44 @@ function updateTimeEntries() {
 	storedTimeEntries = localTimeEntries("get");
 
 	if(storedTimeEntries !== null && Object.keys(storedTimeEntries).length > 0) {
+		timeEntries.innerHTML = "";
+		
 		Object.keys(storedTimeEntries).forEach(key => {
 			const storedEntry = storedTimeEntries[key];
 			const t = getTimeObject(storedEntry.secondsElapsed);
 
+			let row = document.createElement("tr");
+			row.setAttribute("id", `te-${key}`);
+
 			const entry = {
-				id: key,
 				title: storedEntry.title,
 				time: `${padTime(t.h)}:${padTime(t.m)}:${padTime(t.s)}`,
 				created: dayjs(storedEntry.created).format("YYYY-MM-DD HH:mm:ss"),
 				updated: dayjs(storedEntry.updated).format("YYYY-MM-DD HH:mm:ss")
 			}
 
-			let row = document.createElement("tr");
-
 			Object.keys(entry).forEach(k => {
 				let td = document.createElement("td");
 				td.innerText = entry[k];
 				row.append(td);
-			})
+			});
+
+			let removeTd = document.createElement("td");
+			let removeBtn = document.createElement("i");
+			removeBtn.classList.add("remove-time-entry", "fad", "fa-minus-square", "text-4xl", "text-accent-500", "hover:text-accent-700");
+
+			removeBtn.addEventListener("click", function() {
+				let r = document.querySelector(`#te-${key}`);
+				r.remove();
+
+				delete TIME_ENTRIES[key];
+				localTimeEntries("save");
+			});
+
+			removeTd.append(removeBtn);
+			row.append(removeTd);
 
 			// clear table and re-add rows to avoid duplicates
-			timeEntries.innerHTML = "";
 			timeEntries.append(row);
 		});
 	}
@@ -687,4 +771,10 @@ document.querySelectorAll(".tab").forEach(tab => {
 	if(tab.dataset["content"] === "time_entries") {
 		tab.addEventListener("click", updateTimeEntries);
 	}
-})
+});
+
+document.querySelectorAll(".timer").forEach(timer => {
+	timer.querySelector(".form").addEventListener("submit", updateTimeEntries);
+
+	timer.querySelector(".title-input").addEventListener("blur", updateTimeEntries);
+});

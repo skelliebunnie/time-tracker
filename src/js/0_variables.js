@@ -1,4 +1,5 @@
 const clockContainer = document.querySelector("#clock_container");
+const tabbedContentContainer = document.querySelector("#tabbedContent");
 const timersContainer = document.querySelector("#timers_container");
 
 /** CLOCK **/
