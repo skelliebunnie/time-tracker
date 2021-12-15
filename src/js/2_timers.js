@@ -66,7 +66,7 @@ function showTimerTime(target, idx, update=false) {
 
 	} else {
 		target.innerText = `00:00:00`;
-		
+
 	}
 }
 
@@ -101,7 +101,8 @@ document.querySelectorAll(".timer").forEach(timer => {
 	};
 
 	// if there's a stored timer with the same ID, "merge" the data
-	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
+	// also check for secondsElapsed, in case old timers are stored
+	if(storedTimers !== null && !storedTimers.message && storedTimers[idx] && storedTimers[idx].secondsElapsed) {
 		TIMER_INTERVALS[idx] = {
 			...storedTimers[idx],
 			interval: null
