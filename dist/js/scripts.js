@@ -419,6 +419,11 @@ function buildTimer(idx) {
 	}
 }
 
+const addTimerBtn = document.querySelector(".add-timer");
+addTimerBtn.addEventListener("click", function() {
+	let newTimerIndex = uuidv4();
+	buildTimer(newTimerIndex);
+});
 /**
  * CLOCK FUNCTIONS
  */
