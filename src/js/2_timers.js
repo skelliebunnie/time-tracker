@@ -28,7 +28,7 @@ function localTimers(action) {
 	}
 
 	if(action === "set" || action === "save") {
-		localStorage.setItem('sktt_timers', JSON.stringify(TIMER_INTERVALS));
+		localStorage.setItem('sktt_timers', JSON.stringify(TIMERS));
 		res = { message: 'saved timers' };
 	}
 
@@ -42,14 +42,14 @@ function localTimers(action) {
 
 function showTimerTime(target, idx, update=false) {
 	if(update) {
-		let startTime = dayjs(TIMER_INTERVALS[idx].start);
+		let startTime = dayjs(TIMERS[idx].start);
 		let currentTime = dayjs();
 		let diff = currentTime.diff(startTime, 'second', true);
 
 		let res = getTimeObject(diff);
 
-		TIMER_INTERVALS[idx] = {
-			...TIMER_INTERVALS[idx],
+		TIMERS[idx] = {
+			...TIMERS[idx],
 			secondsElapsed: Math.floor(diff)
 		}
 
@@ -57,8 +57,8 @@ function showTimerTime(target, idx, update=false) {
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
 
-	} else if(TIMER_INTERVALS[idx].secondsElapsed > 0) {
-		const s = TIMER_INTERVALS[idx].secondsElapsed;
+	} else if(TIMERS[idx].secondsElapsed > 0) {
+		const s = TIMERS[idx].secondsElapsed;
 		let res = getTimeObject(s);
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
@@ -81,7 +81,7 @@ function updateData(idx) {
 	// if data for the idx exists in localStorage, use that
 	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
 
-		TIMER_INTERVALS[idx] = {
+		TIMERS[idx] = {
 			...storedTimers[idx],
 			interval: null
 		};
@@ -92,7 +92,7 @@ function updateData(idx) {
 
 	} else {
 		// otherwise, set up new data
-		TIMER_INTERVALS[idx] = {
+		TIMERS[idx] = {
 			title: `timer-${idx.substring(0,5)}`,
 			interval: null,
 			start: dayjs(),
@@ -106,14 +106,13 @@ function updateData(idx) {
 			secondsElapsed: 0
 		};
 
-		localTimers("save");
+		// localTimers("save");
 	}
 
 	document.querySelectorAll(".timer").forEach(t => {
 		if(t.dataset["idx"] === idx) {
 			timer = t;
 			timeContainer = t.querySelector(".time");
-			title = t.querySelector("[name='title']").value;
 		}
 	});
 
@@ -151,7 +150,7 @@ function buildTimer(idx) {
 				playPauseBtn.classList.add("fa-play-circle");
 				playPauseBtn.classList.remove("fa-pause-circle");
 
-				clearInterval(TIMER_INTERVALS[idx].interval);
+				clearInterval(TIMERS[idx].interval);
 
 			} else {
 				playPauseBtn.dataset.playing = "true";
@@ -160,9 +159,9 @@ function buildTimer(idx) {
 
 				// reset "start" time for accurate counting after pause
 				// subtracting secondsElapsed to continue count-up correctly
-				TIMER_INTERVALS[idx].start = TIMER_INTERVALS[idx].secondsElapsed > 0 ? dayjs().subtract(TIMER_INTERVALS[idx].secondsElapsed, 'seconds') : dayjs();
+				TIMERS[idx].start = TIMERS[idx].secondsElapsed > 0 ? dayjs().subtract(TIMERS[idx].secondsElapsed, 'seconds') : dayjs();
 
-				TIMER_INTERVALS[idx].interval = setInterval(function() {
+				TIMERS[idx].interval = setInterval(function() {
 						showTimerTime(timeContainer, idx, true);
 					}, 500);
 
@@ -184,7 +183,7 @@ function buildTimer(idx) {
 				timer.remove();
 			}
 
-			delete(TIMER_INTERVALS[idx]);
+			delete(TIMERS[idx]);
 			localTimers("save");
 		});
 

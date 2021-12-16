@@ -1,5 +1,5 @@
 function updateTitle(idx, title) {
-	TIMER_INTERVALS[idx].title = title;
+	TIMERS[idx].title = title;
 	localTimers('save');
 
 	if(TIME_ENTRIES[idx]) {
@@ -15,8 +15,9 @@ function updateTitle(idx, title) {
 document.querySelectorAll(".timer").forEach(timer => {
 	const form = timer.querySelector("form");
 	const idx = timer.dataset['idx'];
-	const storedTimers = localTimers('get');
 	const playPauseBtn = timer.querySelector(".play-pause > i");
+
+	storedTimers = localTimers('get');
 
 	let clearTimeBtn = timer.querySelector(".clear-time");
 	let saveTimeBtn = timer.querySelector(".save-time");
@@ -26,12 +27,12 @@ document.querySelectorAll(".timer").forEach(timer => {
 
 	// if there's a stored timer with the same ID, "merge" the data
 	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
-		TIMER_INTERVALS[idx] = {
+		TIMERS[idx] = {
 			...storedTimers[idx],
 			interval: null
 		};
 
-		title = TIMER_INTERVALS[idx].title !== storedTimers[idx].title ? storedTimers[idx].title : TIMER_INTERVALS[idx].title;
+		title = TIMERS[idx].title !== storedTimers[idx].title ? storedTimers[idx].title : TIMERS[idx].title;
 	}
 
 	// update title in input field
@@ -39,7 +40,7 @@ document.querySelectorAll(".timer").forEach(timer => {
 		timer.querySelector("[name='title']").value = title;
 	}
 	// disable save/clear buttons if at least one time is greater than 0
-	if(TIMER_INTERVALS[idx] && TIMER_INTERVALS[idx].secondsElapsed > 0) {
+	if(TIMERS[idx] && TIMERS[idx].secondsElapsed > 0) {
 		clearTimeBtn.classList.remove("disabled");
 		saveTimeBtn.classList.remove("disabled");
 	}
@@ -51,10 +52,10 @@ document.querySelectorAll(".timer").forEach(timer => {
 			playPauseBtn.classList.remove("fa-pause-circle");
 			playPauseBtn.classList.add("fa-play-circle");
 
-			clearInterval(TIMER_INTERVALS[idx].interval);
+			clearInterval(TIMERS[idx].interval);
 
-			TIMER_INTERVALS[idx] = {
-				...TIMER_INTERVALS[idx],
+			TIMERS[idx] = {
+				...TIMERS[idx],
 				interval: null,
 				end: dayjs(),
 				secondsElapsed: 0
@@ -71,25 +72,43 @@ document.querySelectorAll(".timer").forEach(timer => {
 	// handle saving time as time entry
 	saveTimeBtn.addEventListener("click", function() {
 		if(!saveTimeBtn.classList.contains("disabled")) {
+
+			title = timer.querySelector("[name='title']").value;
+			storedTimers = localTimers("get");
+			storedTimeEntries = localTimeEntries("get");
+
 			playPauseBtn.dataset.playing = false;
 			playPauseBtn.classList.remove("fa-pause-circle");
 			playPauseBtn.classList.add("fa-play-circle");
 
-			clearInterval(TIMER_INTERVALS[idx].interval);
+			clearInterval(TIMERS[idx].interval);
 
-			TIMER_INTERVALS[idx] = {
-				...TIMER_INTERVALS[idx],
+			TIMERS[idx] = {
+				...TIMERS[idx],
 				lastSaved: dayjs(),
 				interval: null
 			};
 			localTimers('save');
 
-			TIME_ENTRIES[idx] = {
-				title:  title,
-				created: dayjs(),
-				updated: dayjs(),
-				secondsElapsed: TIMER_INTERVALS[idx].secondsElapsed
+			if(storedTimeEntries[idx]) {
+				TIME_ENTRIES[idx] = {
+					...storedTimeEntries[idx],
+					updated: dayjs(),
+					secondsElapsed: TIMERS[idx].secondsElapsed
+				}
+
+				if(storedTimeEntries[idx].title !== title) {
+					TIME_ENTRIES[idx].title = title;
+				}
+			} else {
+				TIME_ENTRIES[idx] = {
+					title:  title,
+					created: dayjs(),
+					updated: dayjs(),
+					secondsElapsed: TIMERS[idx].secondsElapsed
+				}
 			}
+
 			localTimeEntries('save');
 		}
 	});
