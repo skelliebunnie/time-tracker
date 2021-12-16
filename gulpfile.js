@@ -97,7 +97,12 @@ function devClean(){
 
 //Production Tasks (Optimized Build for Live/Production Sites)
 function prodHTML(){
-  return src(`${options.paths.src.base}/**/*.html`).pipe(dest(options.paths.build.base));
+	return src([
+	  	`${options.paths.src.base}/**/*.html`, 
+	  	`${options.paths.src.base}/site.webmanifest`, 
+	  	`${options.paths.src.base}/favicon.ico`, 
+	  	`${options.paths.src.base}/*.png`
+  	]).pipe(dest(options.paths.build.base));
 }
 
 function prodStyles(){
