@@ -21,3 +21,12 @@ function getTimeObject(seconds) {
 		s: Math.floor(seconds % 60)
 	};
 }
+
+function getTimer(idx) {
+	let res = null;
+	res = document.querySelectorAll(".timer").forEach(timer => {
+		if(timer.dataset["idx"] === idx) return timer;
+	});
+
+	return res;
+}

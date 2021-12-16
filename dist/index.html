@@ -40,7 +40,7 @@
 			</li>
 		</ul>
 	</header>
-	<main id="main" class="flex-auto grid grid-cols-1 items-stretch">
+	<main id="main" class="clock_left flex-auto grid grid-cols-1 items-stretch">
 		<!-- CLOCK -->
 		<article id="clock_container" class="place-top md:place-left relative flex flex-col flex-1 items-center justify-center text-dark text-center p-4 min-h-1/2 md:min-h-auto md:max-h-screen">
 			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-5xl lg:text-7xl mb-4 min-w-1/5"></h2>
@@ -99,8 +99,11 @@
 						<input type="text" class="title-input text-center w-5/6 p-2 text-3xl leading-10 bg-primary-300 hover:bg-primary-200 active:bg-primary-200" name="title" value="${title}">
 					</form>
 				</h3>
+				<span class="refresh-timer absolute top-3 left-2 ml-3 cursor-pointer align-top">
+					<i class="fad fa-sync-alt text-4xl text-tertiary-500 hover:text-tertiary-700 duration-500"></i>
+				</span>
 				<span class="remove-timer absolute top-3 right-2 mr-3 cursor-pointer align-top">
-					<i class="fad fa-minus-square text-4xl text-accent-500 hover:text-accent-700"></i>
+					<i class="fad fa-minus-square text-4xl text-accent-500 hover:text-accent-700 duration-500"></i>
 				</span>
 			</header>
 			<main class="px-4">

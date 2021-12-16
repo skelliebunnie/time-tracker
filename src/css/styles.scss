@@ -49,8 +49,12 @@ h5, h6 { @apply italic; }
 }
 
 @media (min-width: 768px) {
-	#main {
+	#main.clock_left {
 		grid-template-columns: 1fr 2fr;
+	}
+
+	#main.clock_right {
+		grid-template-columns: 2fr 1fr;
 	}
 }
 

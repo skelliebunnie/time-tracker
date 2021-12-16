@@ -41,8 +41,10 @@ h5, h6 {
   @apply text-neutral-600 cursor-default; }
 
 @media (min-width: 768px) {
-  #main {
-    grid-template-columns: 1fr 2fr; } }
+  #main.clock_left {
+    grid-template-columns: 1fr 2fr; }
+  #main.clock_right {
+    grid-template-columns: 2fr 1fr; } }
 
 .place-top,
 \.md\:place-left {

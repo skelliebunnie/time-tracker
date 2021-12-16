@@ -26,9 +26,16 @@ let OPTIONS = {};
 let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
 
 /** TIMERS **/
-let TIMERS = {};
+let TIMERS = {count: 0, docs: {}};
 let storedTimers = localStorage.getItem('sktt_timers') ? JSON.parse(localStorage.getItem('sktt_timers')) : null;
+if(storedTimers !== null) { storedTimers.count = Object.keys(storedTimers.docs).length };
 
 /** TIME ENTRIES **/
-let TIME_ENTRIES = {};
+let TIME_ENTRIES = {count: 0, docs: {}};
 let storedTimeEntries = localStorage.getItem('sktt_time_entries') ? JSON.parse(localStorage.getItem('sktt_time_entries')) : null;
+if(storedTimeEntries !== null) { storedTimeEntries.count = Object.keys(storedTimeEntries.docs).length };
+
+if(storedTimeEntries === null) {
+	localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
+	storedTimeEntries = TIME_ENTRIES;
+}

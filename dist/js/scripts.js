@@ -26,12 +26,19 @@ let OPTIONS = {};
 let CLOCK_INTERVAL = setInterval(showClockTime, 1000);
 
 /** TIMERS **/
-let TIMERS = {};
+let TIMERS = {count: 0, docs: {}};
 let storedTimers = localStorage.getItem('sktt_timers') ? JSON.parse(localStorage.getItem('sktt_timers')) : null;
+if(storedTimers !== null) { storedTimers.count = Object.keys(storedTimers.docs).length };
 
 /** TIME ENTRIES **/
-let TIME_ENTRIES = {};
+let TIME_ENTRIES = {count: 0, docs: {}};
 let storedTimeEntries = localStorage.getItem('sktt_time_entries') ? JSON.parse(localStorage.getItem('sktt_time_entries')) : null;
+if(storedTimeEntries !== null) { storedTimeEntries.count = Object.keys(storedTimeEntries.docs).length };
+
+if(storedTimeEntries === null) {
+	localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
+	storedTimeEntries = TIME_ENTRIES;
+}
 /**
  * GENERAL FUNCTIONS
  */
@@ -55,6 +62,15 @@ function getTimeObject(seconds) {
 		s: Math.floor(seconds % 60)
 	};
 }
+
+function getTimer(idx) {
+	let res = null;
+	res = document.querySelectorAll(".timer").forEach(timer => {
+		if(timer.dataset["idx"] === idx) return timer;
+	});
+
+	return res;
+}
 /**
  * TIMERS
  * idx: {
@@ -68,11 +84,16 @@ function getTimeObject(seconds) {
 // check for stored timers, and if none found add a starting one
 // otherwise, load up the saved timers
 if(storedTimers === null) {
+	localTimers("save");
+	storedTimers = localTimers("get");
+} 
+
+if(storedTimers.count === 0) {
 	let idx = uuidv4();
 	buildTimer(idx);
 
 } else {
-	Object.keys(storedTimers).forEach(key => {
+	Object.keys(storedTimers.docs).forEach(key => {
 		buildTimer(key);
 	});
 }
@@ -81,7 +102,7 @@ function localTimers(action) {
 	let res;
 
 	if(action === "get") {
-		res = localStorage.getItem('sktt_timers') !== undefined ? JSON.parse(localStorage.getItem('sktt_timers')) : { message: 'no timers found' };
+		res = JSON.parse(localStorage.getItem('sktt_timers'));
 	}
 
 	if(action === "set" || action === "save") {
@@ -99,14 +120,14 @@ function localTimers(action) {
 
 function showTimerTime(target, idx, update=false) {
 	if(update) {
-		let startTime = dayjs(TIMERS[idx].start);
+		let startTime = dayjs(TIMERS.docs[idx].start);
 		let currentTime = dayjs();
 		let diff = currentTime.diff(startTime, 'second', true);
 
 		let res = getTimeObject(diff);
 
-		TIMERS[idx] = {
-			...TIMERS[idx],
+		TIMERS.docs[idx] = {
+			...TIMERS.docs[idx],
 			secondsElapsed: Math.floor(diff)
 		}
 
@@ -114,8 +135,8 @@ function showTimerTime(target, idx, update=false) {
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
 
-	} else if(TIMERS[idx].secondsElapsed > 0) {
-		const s = TIMERS[idx].secondsElapsed;
+	} else if(TIMERS.docs[idx].secondsElapsed > 0) {
+		const s = TIMERS.docs[idx].secondsElapsed;
 		let res = getTimeObject(s);
 
 		target.innerText = `${padTime(res.h)}:${padTime(res.m)}:${padTime(res.s)}`;
@@ -136,35 +157,37 @@ function updateData(idx) {
 	storedTimers = localTimers("get");
 
 	// if data for the idx exists in localStorage, use that
-	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
+	if(storedTimers.docs[idx]) {
 
-		TIMERS[idx] = {
-			...storedTimers[idx],
+		TIMERS.docs[idx] = {
+			...storedTimers.docs[idx],
 			interval: null
 		};
 
-		if(storedTimeEntries !== null && storedTimeEntries[idx]) {
-			TIME_ENTRIES[idx] = { ...storedTimeEntries[idx] };
+		if(storedTimeEntries.docs[idx]) {
+			TIME_ENTRIES.docs[idx] = { ...storedTimeEntries.docs[idx] };
 		}
 
 	} else {
 		// otherwise, set up new data
-		TIMERS[idx] = {
+		TIMERS.docs[idx] = {
 			title: `timer-${idx.substring(0,5)}`,
 			interval: null,
 			start: dayjs(),
 			secondsElapsed: 0
 		};
 
-		TIME_ENTRIES[idx] = {
+		TIME_ENTRIES.docs[idx] = {
 			title: `timer-${idx.substring(0,5)}`,
 			created: dayjs(),
 			updated: dayjs(),
 			secondsElapsed: 0
 		};
 
-		// localTimers("save");
 	}
+	TIME_ENTRIES.count = Object.keys(TIME_ENTRIES.docs).length;
+
+	localTimers("save");	
 
 	document.querySelectorAll(".timer").forEach(t => {
 		if(t.dataset["idx"] === idx) {
@@ -180,24 +203,75 @@ function updateData(idx) {
 	}
 }
 
+function updateTitle(idx, title) {
+	TIMERS.docs[idx].title = title;
+	localTimers('save');
+
+	if(TIME_ENTRIES.docs[idx]) {
+		TIME_ENTRIES.docs[idx].title = title;
+
+		localTimeEntries("save");
+	}
+}
+
 function buildTimer(idx) {
 	if(idx !== undefined) {
 		let template = document.querySelector("#timerTemplate");
 		let timer = template.content.cloneNode(true);
 		timer.querySelector(".timer").dataset["idx"] = idx;
 
+		let title = `timer-${idx.substring(0,5)}`;
+
+		let form = timer.querySelector(".form");
 		let formContent = timer.querySelector(".form").innerHTML;
-		timer.querySelector(".form").innerHTML = formContent.replace("${title}", `timer-${idx.substring(0,5)}`);
+		form.innerHTML = formContent.replace("${title}", title);
 
 		const playPauseBtn = timer.querySelector(".play-pause > i");
 		const removeTimerBtn = timer.querySelector(".remove-timer > i");
+		const refreshTimerBtn = timer.querySelector(".refresh-timer");
 
 		let clearTimeBtn = timer.querySelector(".clear-time");
 		let saveTimeBtn = timer.querySelector(".save-time");
 
 		let timeContainer = timer.querySelector(".time");
 
-		// handle starting/stopping timer
+		storedTimeEntries = localTimeEntries("get");
+		let timeEntry = storedTimeEntries.docs[idx];
+
+		storedTimers = localTimers('get');
+
+		// if there's a stored timer with the same ID, "merge" the data
+		if(storedTimers.docs[idx]) {
+			TIMERS.docs[idx] = {
+				...storedTimers.docs[idx],
+				interval: null
+			};
+
+			title = storedTimers.docs[idx].title !== `timer-${idx.substring(0,5)}` ? storedTimers.docs[idx].title : TIMERS.docs[idx].title;
+		}
+
+		// update title in input field if it doesn't match the var value
+		if(timer.querySelector("[name='title']").value !== title) {
+			timer.querySelector("[name='title']").value = title;
+		}
+		// enable save/clear buttons if time elapsed is greater than 0
+		if(TIMERS.docs[idx] && TIMERS.docs[idx].secondsElapsed > 0) {
+			clearTimeBtn.classList.remove("disabled");
+			saveTimeBtn.classList.remove("disabled");
+		}
+
+		// SUBMIT: update title & blur input field
+		form.addEventListener("submit", function(e) {
+			e.preventDefault();
+			form.querySelector("input").blur();
+		});
+
+		// BLUR: update title
+		form.querySelector("input").addEventListener("blur", function(e) {
+			updateTitle(idx, e.target.value);
+		});
+
+		// CLICK: starting/stopping timer
 		playPauseBtn.addEventListener("click", function() {
 			const playing = playPauseBtn.dataset.playing;
 
@@ -207,7 +281,7 @@ function buildTimer(idx) {
 				playPauseBtn.classList.add("fa-play-circle");
 				playPauseBtn.classList.remove("fa-pause-circle");
 
-				clearInterval(TIMERS[idx].interval);
+				clearInterval(TIMERS.docs[idx].interval);
 
 			} else {
 				playPauseBtn.dataset.playing = "true";
@@ -216,9 +290,9 @@ function buildTimer(idx) {
 
 				// reset "start" time for accurate counting after pause
 				// subtracting secondsElapsed to continue count-up correctly
-				TIMERS[idx].start = TIMERS[idx].secondsElapsed > 0 ? dayjs().subtract(TIMERS[idx].secondsElapsed, 'seconds') : dayjs();
+				TIMERS.docs[idx].start = TIMERS.docs[idx].secondsElapsed > 0 ? dayjs().subtract(TIMERS.docs[idx].secondsElapsed, 'seconds') : dayjs();
 
-				TIMERS[idx].interval = setInterval(function() {
+				TIMERS.docs[idx].interval = setInterval(function() {
 						showTimerTime(timeContainer, idx, true);
 					}, 500);
 
@@ -227,6 +301,7 @@ function buildTimer(idx) {
 			}
 		});
 
+		// CLICK: remove timer
 		removeTimerBtn.addEventListener("click", function() {
 			let timer;
 			document.querySelectorAll(".timer").forEach(t => {
@@ -234,18 +309,95 @@ function buildTimer(idx) {
 					timer = t;
 				}
 			});
-			console.log(timer)
 
 			if(timer) {
 				timer.remove();
 			}
 
-			delete(TIMERS[idx]);
+			delete(TIMERS.docs[idx]);
 			localTimers("save");
+
+			// storedTimers = localTimers("get");
+			// if(storedTimers.count && storedTimers.count === 0) {
+			// 	let id = uuidv4();
+			// 	buildTimer(id);
+			// }
+		});
+
+		// CLICK: clear timer time display
+		clearTimeBtn.addEventListener("click", function() {
+			if(!clearTimeBtn.classList.contains("disabled")) {
+				playPauseBtn.dataset.playing = false;
+				playPauseBtn.classList.remove("fa-pause-circle");
+				playPauseBtn.classList.add("fa-play-circle");
+
+				clearInterval(TIMERS.docs[idx].interval);
+
+				TIMERS.docs[idx] = {
+					...TIMERS.docs[idx],
+					interval: null,
+					end: dayjs(),
+					secondsElapsed: 0
+				};
+				timeContainer.innerText = "00:00:00";
+
+				localTimers('save');
+
+				clearTimeBtn.classList.add("disabled");
+				saveTimeBtn.classList.add("disabled");
+			}
+		});
+
+		// CLICK: save timer data as a time entry
+		saveTimeBtn.addEventListener("click", function() {
+			if(!saveTimeBtn.classList.contains("disabled")) {
+				storedTimers = localTimers("get");
+				storedTimeEntries = localTimeEntries("get");
+
+				playPauseBtn.dataset.playing = false;
+				playPauseBtn.classList.remove("fa-pause-circle");
+				playPauseBtn.classList.add("fa-play-circle");
+
+				clearInterval(TIMERS.docs[idx].interval);
+
+				TIMERS.docs[idx] = {
+					...TIMERS.docs[idx],
+					lastSaved: dayjs(),
+					interval: null
+				};
+				localTimers('save');
+				storedTimers = localTimers("get");
+
+				if(timeEntry) {
+					TIME_ENTRIES.docs[idx] = {
+						...timeEntry,
+						title:  TIMERS.docs[idx].title,
+						updated: dayjs(),
+						secondsElapsed: TIMERS.docs[idx].secondsElapsed
+					}
+
+					if(timeEntry.title !== title) {
+						TIME_ENTRIES.docs[idx].title = title;
+					}
+				} else {
+					TIME_ENTRIES.docs[idx] = {
+						title:  TIMERS.docs[idx].title,
+						created: dayjs(),
+						updated: dayjs(),
+						secondsElapsed: TIMERS.docs[idx].secondsElapsed
+					}
+				}
+				TIME_ENTRIES.count = Object.keys(TIME_ENTRIES.docs).length;
+				localTimeEntries('save');
+				storedTimeEntries = localTimeEntries("get");
+			}
 		});
 
 		timersContainer.append(timer);
+		TIMERS.count += 1;
+
 		updateData(idx);
+
 	}
 }
 
@@ -502,146 +654,15 @@ document.querySelectorAll("input.opt-input").forEach(item => {
 document.querySelector("#seconds_display").addEventListener('change', (e) => {
 	updateOptions();
 });
-function updateTitle(idx, title) {
-	TIMERS[idx].title = title;
-	localTimers('save');
-
-	if(TIME_ENTRIES[idx]) {
-		TIME_ENTRIES[idx].title = title;
-	}
-
-	storedTimeEntries = localTimeEntries("get");
-	if(storedTimeEntries[idx]) {
-		localTimeEntries("save");
-	}
-}
-
-document.querySelectorAll(".timer").forEach(timer => {
-	const form = timer.querySelector("form");
-	const idx = timer.dataset['idx'];
-	const playPauseBtn = timer.querySelector(".play-pause > i");
-
-	storedTimers = localTimers('get');
-
-	let clearTimeBtn = timer.querySelector(".clear-time");
-	let saveTimeBtn = timer.querySelector(".save-time");
-	let title = timer.querySelector("[name='title']").value;
-
-	let timeContainer = timer.querySelector(".time");
-
-	// if there's a stored timer with the same ID, "merge" the data
-	if(storedTimers !== null && !storedTimers.message && storedTimers[idx]) {
-		TIMERS[idx] = {
-			...storedTimers[idx],
-			interval: null
-		};
-
-		title = TIMERS[idx].title !== storedTimers[idx].title ? storedTimers[idx].title : TIMERS[idx].title;
-	}
-
-	// update title in input field
-	if(timer.querySelector("[name='title']").value !== title) {
-		timer.querySelector("[name='title']").value = title;
-	}
-	// disable save/clear buttons if at least one time is greater than 0
-	if(TIMERS[idx] && TIMERS[idx].secondsElapsed > 0) {
-		clearTimeBtn.classList.remove("disabled");
-		saveTimeBtn.classList.remove("disabled");
-	}
-
-	// handle clearing timer "count-up"
-	clearTimeBtn.addEventListener("click", function() {
-		if(!clearTimeBtn.classList.contains("disabled")) {
-			playPauseBtn.dataset.playing = false;
-			playPauseBtn.classList.remove("fa-pause-circle");
-			playPauseBtn.classList.add("fa-play-circle");
-
-			clearInterval(TIMERS[idx].interval);
-
-			TIMERS[idx] = {
-				...TIMERS[idx],
-				interval: null,
-				end: dayjs(),
-				secondsElapsed: 0
-			};
-			timeContainer.innerText = "00:00:00";
-
-			localTimers('save');
-
-			clearTimeBtn.classList.add("disabled");
-			saveTimeBtn.classList.add("disabled");
-		}
-	});
-
-	// handle saving time as time entry
-	saveTimeBtn.addEventListener("click", function() {
-		if(!saveTimeBtn.classList.contains("disabled")) {
-
-			title = timer.querySelector("[name='title']").value;
-			storedTimers = localTimers("get");
-			storedTimeEntries = localTimeEntries("get");
-
-			playPauseBtn.dataset.playing = false;
-			playPauseBtn.classList.remove("fa-pause-circle");
-			playPauseBtn.classList.add("fa-play-circle");
-
-			clearInterval(TIMERS[idx].interval);
-
-			TIMERS[idx] = {
-				...TIMERS[idx],
-				lastSaved: dayjs(),
-				interval: null
-			};
-			localTimers('save');
-
-			if(storedTimeEntries[idx]) {
-				TIME_ENTRIES[idx] = {
-					...storedTimeEntries[idx],
-					updated: dayjs(),
-					secondsElapsed: TIMERS[idx].secondsElapsed
-				}
-
-				if(storedTimeEntries[idx].title !== title) {
-					TIME_ENTRIES[idx].title = title;
-				}
-			} else {
-				TIME_ENTRIES[idx] = {
-					title:  title,
-					created: dayjs(),
-					updated: dayjs(),
-					secondsElapsed: TIMERS[idx].secondsElapsed
-				}
-			}
-
-			localTimeEntries('save');
-		}
-	});
-
-	// update title on form submit
-	form.addEventListener("submit", function(e) {
-		e.preventDefault();
-		form.querySelector("input").blur();
-
-		updateTitle(idx, e.target[0].value);
-	});
-	// or on leaving the input field
-	form.querySelector("input").addEventListener("blur", function(e) {
-		updateTitle(idx, e.target.value);
-	});
-});
-
-const addTimerBtn = document.querySelector(".add-timer");
-addTimerBtn.addEventListener("click", function() {
-	let newTimerIndex = uuidv4();
-	buildTimer(newTimerIndex);
-});
 /**
  * LAYOUT FUNCTIONS
  */
 updateLayout();
 
 function updateLayout() {
-	// clock_right == place-bottom on mobile (< 640)
+	const main = document.querySelector("#main");
+
+	// clock_right == place-bottom on mobile (< 768)
 	if(OPTIONS.clock_right) {
 		clockContainer.classList.remove("place-top", "md:place-left");
 		clockContainer.classList.add("place-bottom", "md:place-right");
@@ -649,12 +670,18 @@ function updateLayout() {
 		tabbedContentContainer.classList.remove("place-bottom", "md:place-right");
 		tabbedContentContainer.classList.add("place-top", "md:place-left");
 
+		main.classList.remove("clock_left");
+		main.classList.add("clock_right");
+
 	} else {
 		clockContainer.classList.remove("place-bottom", "md:place-right");
 		clockContainer.classList.add("place-top", "md:place-left");
 
 		tabbedContentContainer.classList.remove("place-top", "md:place-left");
 		tabbedContentContainer.classList.add("place-bottom", "md:place-right");
+
+		main.classList.remove("clock_right");
+		main.classList.add("clock_left");
 	}
 }
 /**
@@ -721,8 +748,8 @@ function localTimeEntries(action) {
 	}
 
 	if(action === "set" || action === "save") {
-		Object.keys(TIME_ENTRIES).forEach(key => {
-			if(!TIME_ENTRIES[key].title) delete TIME_ENTRIES[key];
+		Object.keys(TIME_ENTRIES.docs).forEach(key => {
+			if(!TIME_ENTRIES.docs[key].title) delete TIME_ENTRIES.docs[key];
 		});
 
 		localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
@@ -740,11 +767,11 @@ function localTimeEntries(action) {
 function updateTimeEntries() {
 	storedTimeEntries = localTimeEntries("get");
 
-	if(storedTimeEntries !== null && Object.keys(storedTimeEntries).length > 0) {
+	if(storedTimeEntries.count > 0) {
 		timeEntries.innerHTML = "";
 		
-		Object.keys(storedTimeEntries).forEach(key => {
-			const storedEntry = storedTimeEntries[key];
+		Object.keys(storedTimeEntries.docs).forEach(key => {
+			const storedEntry = storedTimeEntries.docs[key];
 			const t = getTimeObject(storedEntry.secondsElapsed);
 
 			let row = document.createElement("tr");

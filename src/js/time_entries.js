@@ -11,8 +11,8 @@ function localTimeEntries(action) {
 	}
 
 	if(action === "set" || action === "save") {
-		Object.keys(TIME_ENTRIES).forEach(key => {
-			if(!TIME_ENTRIES[key].title) delete TIME_ENTRIES[key];
+		Object.keys(TIME_ENTRIES.docs).forEach(key => {
+			if(!TIME_ENTRIES.docs[key].title) delete TIME_ENTRIES.docs[key];
 		});
 
 		localStorage.setItem('sktt_time_entries', JSON.stringify(TIME_ENTRIES));
@@ -30,11 +30,11 @@ function localTimeEntries(action) {
 function updateTimeEntries() {
 	storedTimeEntries = localTimeEntries("get");
 
-	if(storedTimeEntries !== null && Object.keys(storedTimeEntries).length > 0) {
+	if(storedTimeEntries.count > 0) {
 		timeEntries.innerHTML = "";
 		
-		Object.keys(storedTimeEntries).forEach(key => {
-			const storedEntry = storedTimeEntries[key];
+		Object.keys(storedTimeEntries.docs).forEach(key => {
+			const storedEntry = storedTimeEntries.docs[key];
 			const t = getTimeObject(storedEntry.secondsElapsed);
 
 			let row = document.createElement("tr");
