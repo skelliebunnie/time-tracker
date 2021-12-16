@@ -243,12 +243,6 @@ function buildTimer(idx) {
 
 			delete(TIMERS.docs[idx]);
 			localTimers("save");
-
-			// storedTimers = localTimers("get");
-			// if(storedTimers.count && storedTimers.count === 0) {
-			// 	let id = uuidv4();
-			// 	buildTimer(id);
-			// }
 		});
 
 		// CLICK: clear timer time display
@@ -318,6 +312,30 @@ function buildTimer(idx) {
 				localTimeEntries('save');
 				storedTimeEntries = localTimeEntries("get");
 			}
+		});
+
+		// TODO: set up refresh action (& unhide icon in HTML!)
+		// CLICK: refresh timer UUID
+		// this is so we can re-use the same timer for multiple entries
+		// without having to create a new timer & delete the old one
+		refreshTimerBtn.addEventListener("click", function() {
+// 			let newId = uuidv4();
+// 			TIMERS.docs[newId] = {
+// 				...TIMERS.docs[idx],
+// 				interval: null,
+// 				start: dayjs()
+// 			}
+// 			console.log(newId);
+// 
+// 			delete(TIMERS.docs[idx]);
+// 
+// 			document.querySelectorAll(".timer").forEach(timer => {
+// 				if(timer.dataset["idx"] === idx) {
+// 					timer.setAttribute("data-idx", newId);
+// 				}
+// 			});
+// 
+// 			localTimers("save");
 		});
 
 		timersContainer.append(timer);
