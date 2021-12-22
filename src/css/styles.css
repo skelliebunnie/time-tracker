@@ -42,9 +42,9 @@ h5, h6 {
 
 @media (min-width: 768px) {
   #main.clock_left {
-    grid-template-columns: 1fr 2fr; }
+    grid-template-columns: 1fr 1.5fr; }
   #main.clock_right {
-    grid-template-columns: 2fr 1fr; } }
+    grid-template-columns: 1.5fr 1fr; } }
 
 .place-top,
 \.md\:place-left {

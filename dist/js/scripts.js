@@ -315,6 +315,7 @@ function buildTimer(idx) {
 			}
 
 			delete(TIMERS.docs[idx]);
+			TIMERS.count = TIMERS.count > 0 ? TIMERS.count - 1 : 0;
 			localTimers("save");
 		});
 
@@ -540,6 +541,18 @@ function updateOptions() {
 			document.querySelector("[name='seconds_display']").value = OPTIONS["seconds_display"];
 		}
 	});
+
+	if(!OPTIONS['show_seconds']) {
+		document.querySelector("[name='seconds_display']").style.display = 'none';
+		// document.querySelector(".seconds_display").style.display = 'none';
+		
+		document.querySelector("[name='sec_numbers']").setAttribute("checked", false);
+
+	} else {
+		document.querySelector("[name='seconds_display']").style.display = 'block';
+		// document.querySelector(".seconds_display").style.display = 'block';
+
+	}
 
 	updateLayout();
 	updateClockDisplay();
@@ -822,6 +835,7 @@ function updateTimeEntries() {
 				r.remove();
 
 				delete TIME_ENTRIES[key];
+				TIME_ENTRIES.count = TIME_ENTRIES.count > 0 ? TIME_ENTRIES.count - 1 : 0;
 				localTimeEntries("save");
 			});
 

@@ -242,6 +242,7 @@ function buildTimer(idx) {
 			}
 
 			delete(TIMERS.docs[idx]);
+			TIMERS.count = TIMERS.count > 0 ? TIMERS.count - 1 : 0;
 			localTimers("save");
 		});
 

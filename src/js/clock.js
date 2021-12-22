@@ -115,6 +115,18 @@ function updateOptions() {
 		}
 	});
 
+	if(!OPTIONS['show_seconds']) {
+		document.querySelector("[name='seconds_display']").style.display = 'none';
+		// document.querySelector(".seconds_display").style.display = 'none';
+		
+		document.querySelector("[name='sec_numbers']").setAttribute("checked", false);
+
+	} else {
+		document.querySelector("[name='seconds_display']").style.display = 'block';
+		// document.querySelector(".seconds_display").style.display = 'block';
+
+	}
+
 	updateLayout();
 	updateClockDisplay();
 }

@@ -62,6 +62,7 @@ function updateTimeEntries() {
 				r.remove();
 
 				delete TIME_ENTRIES[key];
+				TIME_ENTRIES.count = TIME_ENTRIES.count > 0 ? TIME_ENTRIES.count - 1 : 0;
 				localTimeEntries("save");
 			});
 
