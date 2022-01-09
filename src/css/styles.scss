@@ -70,6 +70,8 @@ h5, h6 { @apply italic; }
 	}
 
 	&:after {
+		@apply border;
+
 		content: "";
 
 		position: absolute;
@@ -83,7 +85,6 @@ h5, h6 { @apply italic; }
 		margin-bottom: -3px;
 		
 		border: 10px solid transparent;
-		border-top-color: var(--neutral-700);
 
 		display: none;
 	}

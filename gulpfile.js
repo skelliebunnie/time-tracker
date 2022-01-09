@@ -53,14 +53,20 @@ function devHTML(){
   return src([
 	  	`${options.paths.src.base}/**/*.html`, 
 	  	`${options.paths.src.base}/site.webmanifest`, 
-	  	`${options.paths.src.base}/favicon.ico`, 
+	  	`${options.paths.src.base}/img/favicons/favicon.ico`, 
 	  	`${options.paths.src.base}/*.png`
-  	]).pipe(dest(options.paths.dist.base));
+  	], 
+  	{'allowEmpty': true})
+  	.pipe(dest(options.paths.dist.base));
 } 
 
 function devStyles(){
   const tailwindcss = require('tailwindcss'); 
-  return src(`${options.paths.src.css}/**/*.scss`).pipe(sass().on('error', sass.logError))
+  return src([
+  		`${options.paths.src.css}/**/*.scss`
+  	], 
+  	{'allowEmpty': true})
+  	.pipe(sass().on('error', sass.logError))
     .pipe(dest(options.paths.src.css))
     .pipe(postcss([
       tailwindcss(options.config.tailwindjs),
@@ -72,14 +78,20 @@ function devStyles(){
 
 function devScripts(){
   return src([
-    `${options.paths.src.js}/libs/**/*.js`,
-    `${options.paths.src.js}/**/*.js`,
-    `!${options.paths.src.js}/**/external/*`
-  ]).pipe(concat({ path: 'scripts.js'})).pipe(dest(options.paths.dist.js));
+	    `${options.paths.src.js}/libs/**/*.js`,
+	    `${options.paths.src.js}/**/*.js`,
+	    `!${options.paths.src.js}/**/external/*`
+	  ], 
+	  {'allowEmpty': true})
+  	.pipe(concat({ path: 'scripts.js'})).pipe(dest(options.paths.dist.js));
 }
 
 function devImages(){
-  return src(`${options.paths.src.img}/**/*`).pipe(dest(options.paths.dist.img));
+  return src([
+  		`${options.paths.src.img}/**/*`
+  	], 
+  	{'allowEmpty': true})
+  	.pipe(dest(options.paths.dist.img));
 }
 
 function watchFiles(){
@@ -100,14 +112,19 @@ function prodHTML(){
 	return src([
 	  	`${options.paths.src.base}/**/*.html`, 
 	  	`${options.paths.src.base}/site.webmanifest`, 
-	  	`${options.paths.src.base}/favicon.ico`, 
+	  	`${options.paths.src.base}/img/favicons/favicon.ico`, 
 	  	`${options.paths.src.base}/*.png`
-  	]).pipe(dest(options.paths.build.base));
+  	], 
+  	{'allowEmpty': true})
+		.pipe(dest(options.paths.build.base));
 }
 
 function prodStyles(){
-  return src(`${options.paths.dist.css}/**/*`)
-  .pipe(purgecss({
+  return src([
+  		`${options.paths.dist.css}/**/*`
+  	], 
+  	{'allowEmpty': true})
+  	.pipe(purgecss({
     content: ['src/**/*.{html,js}'],
     defaultExtractor: content => {
       const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || []
@@ -121,16 +138,21 @@ function prodStyles(){
 
 function prodScripts(){
   return src([
-    `${options.paths.src.js}/libs/**/*.js`,
-    `${options.paths.src.js}/**/*.js`
-  ])
-  .pipe(concat({ path: 'scripts.js'}))
-  .pipe(uglify())
-  .pipe(dest(options.paths.build.js));
+	    `${options.paths.src.js}/libs/**/*.js`,
+	    `${options.paths.src.js}/**/*.js`
+	  ], 
+	  {'allowEmpty': true})
+	  .pipe(concat({ path: 'scripts.js'}))
+	  .pipe(uglify())
+	  .pipe(dest(options.paths.build.js));
 }
 
 function prodImages(){
-  return src(options.paths.src.img + '/**/*').pipe(imagemin()).pipe(dest(options.paths.build.img));
+  return src([
+  	`${options.paths.src.img}/**/*`
+  	], 
+  	{'allowEmpty': true})
+  	.pipe(imagemin()).pipe(dest(options.paths.build.img));
 }
 
 function prodClean(){

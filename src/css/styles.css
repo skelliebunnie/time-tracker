@@ -51,6 +51,7 @@ h5, h6 {
     min-width: 300px;
     display: none; }
   .has-tooltip:after {
+    @apply border;
     content: "";
     position: absolute;
     left: 50%;
@@ -58,7 +59,6 @@ h5, h6 {
     bottom: 100%;
     margin-bottom: -3px;
     border: 10px solid transparent;
-    border-top-color: var(--neutral-700);
     display: none; }
   .has-tooltip.tooltip-visible:before, .has-tooltip.tooltip-visible:after, .has-tooltip:hover:before, .has-tooltip:hover:after {
     display: block; }
