@@ -9,48 +9,52 @@
   <!-- Manifest: GitHub pages doesn't like this -->
   <!-- <link rel="manifest" href="/site.webmanifest"> -->
 	<title>Time Tracker</title>
-	<link rel="stylesheet" href="./css/style.css">
 	<script src="https://kit.fontawesome.com/68e1458f78.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="./css/style.css">
 </head>
 <body class='bg-neutral-300 flex flex-col items-stretch h-screen md:max-h-screen font-body'>
 	<header class="text-center bg-neutral-900 text-light z-10">
 		<h1>Time Tracker</h1>
-		<ul class="flex flex-wrap max-w-5xl mx-auto my-6">
-			<li class="flex-0 w-full"><h4 class="leading-relaxed">Options</h4></li>
-			<li class="flex-1 flex flex-row flex-wrap">
-				<label class="flex-auto" for="show_seconds"><input class="opt-input" type="checkbox" name="show_seconds" value="show_seconds"> Show Seconds Counter</label>
-				<label class="flex-auto" for="sec_numbers"><input class="opt-input" type="checkbox" name="sec_numbers" value="sec_numbers"> As Numbers</label>
-				<label class="seconds_display flex-auto text-left w-full hidden" for="seconds_display">Display Style</label>
-				<select id="seconds_display" class="opt-input px-2 py-1 w-full mt-2 text-dark hidden" name="seconds_display">
-					<option value="none" selected>Seconds Display Style</option>
-					<option value="dots">Dots</option>
-					<option value="line">Line</option>
-					<option value="circle">Circle</option>
-				</select>
-			</li>
-			<li class="flex-1">
-				<label for="clock_right">
-					<input class="opt-input" type="checkbox" name="clock_right" value="clock_right"> Clock on Right / Bottom</label>
-			</li>
-			<li class="flex-1">
-				<label for="hr24">
-					<input class="opt-input" type="checkbox" name="hr24" value="hr24"> 24-Hour Time</label>
-			</li>
-		</ul>
 	</header>
 	<main id="main" class="clock_left flex-auto grid grid-cols-1 items-stretch">
 		<!-- CLOCK -->
-		<article id="clock_container" class="place-top md:place-left relative flex flex-col flex-1 items-center justify-center text-dark text-center p-4 min-h-1/2 md:min-h-auto md:max-h-screen">
-			<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-5xl lg:text-7xl mb-4 min-w-1/5"></h2>
-			<!-- counter containers -->
-			<div id="dotsContainer" class="absolute origin-left transform translate-x-1/2 -rotate-90 flex-none w-9/12 box-border hidden"></div>
-			<div id="lineContainer" class="bg-neutral-400 h-2 w-9/12 hidden">
-				<div id="line" class="bg-accent-500 h-2"></div>
+		<article id="clock_wrapper" class="place-top md:place-left relative flex flex-col flex-1 text-dark text-center pb-4 justify-center items-center">
+			<div id="options_wrapper" class="flex-0 z-50">
+				<h4 class="options-title relative small-caps p-4 bg-neutral-100 top-bar" data-open="false">Options <i class="fad fa-angle-down top-1 cursor-pointer text-accent-500 hover:text-accent-600 transition-colors transition-200 z-10"></i></h4>
+				<ul class="options_container flex flex-wrap mx-auto p-4 overflow-hidden origin-top scale-y-0 transition-transform bg-neutral-200 z-0">
+					<li class="flex-1">
+						<label for="clock_right">
+							<input class="opt-input" type="checkbox" name="clock_right" value="clock_right"> Clock on Right / Bottom</label>
+					</li>
+					<li class="flex-1">
+						<label for="hr24">
+							<input class="opt-input" type="checkbox" name="hr24" value="hr24"> 24-Hour Time</label>
+					</li>
+					<li class="flex-1 flex flex-row flex-wrap text-left">
+						<label class="flex-auto" for="show_seconds"><input class="opt-input" type="checkbox" name="show_seconds" value="show_seconds"> Show Seconds Counter</label>
+						<label class="flex-auto" for="sec_numbers"><input class="opt-input" type="checkbox" name="sec_numbers" value="sec_numbers"> As Numbers</label>
+						<label class="seconds_display flex-auto text-left w-full hidden" for="seconds_display">Display Style</label>
+						<select id="seconds_display" class="opt-input px-2 py-1 w-full mt-2 text-dark hidden" name="seconds_display">
+							<option value="none" selected>Seconds Display Style</option>
+							<option value="dots">Dots</option>
+							<option value="line">Line</option>
+							<option value="circle">Circle</option>
+						</select>
+					</li>
+				</ul>
 			</div>
-			<svg id="circleContainer" class="absolute origin-left flex-none box-border hidden flex items-center justify-center m-0 p-0 bg-transparent" width="400" height="400">
-				<circle class="circle" />
-				<circle class="circle fill-circle" />
-			</svg>
+			<div id="clock_container" class="flex-1 flex flex-col items-center justify-center w-full h-full px-4 pb-4">
+				<h2 id="clock" class="relative block flex-shrink-0 flex-grow-1 text-4xl md:text-5xl lg:text-7xl mb-4 w-full -mt-24"></h2>
+				<!-- counter containers -->
+				<div id="dotsContainer" class="absolute origin-left transform translate-x-1/2 -rotate-90 flex-none w-9/12 box-border hidden -mt-24 z-0"></div>
+				<div id="lineContainer" class="flex-grow-1 flex-shrink-0 bg-neutral-400 h-2 w-9/12 hidden">
+					<div id="line" class="bg-accent-500 h-2"></div>
+				</div>
+				<svg id="circleContainer" class="absolute origin-left flex-none box-border hidden flex items-center justify-center m-0 p-0 bg-transparent -mt-12 z-0" width="400" height="400">
+					<circle class="circle" />
+					<circle class="circle fill-circle" />
+				</svg>
+			</div>
 		</article>
 		<!-- TABS: TIMERS & TIME ENTRIES -->
 		<article id="tabbedContent" class="place-bottom md:place-right flex flex-col flex-1 items-start bg-neutral-800 text-light p-4">

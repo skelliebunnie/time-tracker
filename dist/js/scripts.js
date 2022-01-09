@@ -692,6 +692,25 @@ document.querySelectorAll("input.opt-input").forEach(item => {
 document.querySelector("#seconds_display").addEventListener('change', (e) => {
 	updateOptions();
 });
+
+let optionsTitle = document.querySelector(".options-title");
+optionsTitle.addEventListener("click", (e) => {
+	if(optionsTitle.dataset.open == 'true') {
+		optionsTitle.dataset.open = false;
+
+		optionsTitle.querySelector(".fad").classList.remove("fa-angle-up");
+		optionsTitle.querySelector(".fad").classList.add("fa-angle-down");
+
+		document.querySelector(".options_container").classList.add("scale-y-0");
+	} else {
+		optionsTitle.dataset.open = true;
+
+		optionsTitle.querySelector(".fad").classList.remove("fa-angle-down");
+		optionsTitle.querySelector(".fad").classList.add("fa-angle-up");
+
+		document.querySelector(".options_container").classList.remove("scale-y-0");
+	}
+});
 /**
  * LAYOUT FUNCTIONS
  */

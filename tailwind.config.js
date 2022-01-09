@@ -3,10 +3,10 @@ const twcolors = require('tailwindcss/colors');
 let palette = require('./utils/palette');
 
 module.exports = {
- purge: [
-  './src/**/*.html',
-  './src/**/*.js',
- ],
+	content: [
+		'./src/*.html',
+		'./src/css/*.scss'
+	],
   darkMode: 'class', // or 'media' or false
   theme: { 
   	colors: {

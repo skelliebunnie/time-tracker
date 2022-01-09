@@ -4,40 +4,50 @@
   --neutral-700: rgb(101, 93, 100); }
 
 /* general HTML tags */
-a {
+a, .link {
   @apply text-accent-600 hover:text-accent-700; }
-  .text-light a {
+  .text-light a, .text-light .link {
     @apply text-accent-400 hover:text-accent-500; }
 
-h1 {
+h1, .h1 {
   @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+  @apply leading-relaxed;
   font-variant: small-caps; }
 
-h2 {
+h2, .h2 {
   @apply text-4xl md:text-5xl font-bold;
+  @apply leading-relaxed;
   font-variant: small-caps; }
 
-h3 {
-  @apply text-3xl md:text-4xl font-bold; }
+h3, .h3 {
+  @apply text-3xl md:text-4xl font-bold;
+  @apply leading-relaxed; }
 
-h4, h5, h6 {
+h4, h5, h6,
+.h4, .h5, .h6 {
   @apply text-2xl md:text-4xl; }
 
-h5, h6 {
+h5, h6,
+.h5, .h6 {
   @apply italic; }
 
 /* general classes */
 .disabled {
   @apply text-neutral-600 cursor-default; }
 
-.place-top,
-\.md\:place-left {
-  @apply row-start-1 col-start-1; }
+.small-caps {
+  font-variant: small-caps; }
 
-.place-bottom,
-\.md\:place-right {
-  @apply row-start-2 col-start-1 md:row-start-1 md:col-start-2; }
+.top-bar:after {
+  width: 100%;
+  content: "";
+  height: 1px;
+  border-bottom: 1px solid black;
+  background: black;
+  box-shadow: 0 3px 5px 0 black;
+  z-index: 10; }
 
+/* TOOLTIPS */
 .has-tooltip {
   position: relative; }
   .has-tooltip:before {
@@ -141,6 +151,15 @@ h5, h6 {
     margin-right: -3px;
     border-top-color: transparent;
     border-left-color: var(--neutral-700); }
+
+/* MAIN CONTENT LAYOUT CLASSES */
+.place-top,
+\.md\:place-left {
+  @apply row-start-1 col-start-1; }
+
+.place-bottom,
+\.md\:place-right {
+  @apply row-start-2 col-start-1 md:row-start-1 md:col-start-2; }
 
 /* SECONDS COUNTERS */
 #line,
