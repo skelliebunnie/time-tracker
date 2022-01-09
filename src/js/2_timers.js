@@ -147,6 +147,10 @@ function buildTimer(idx) {
 		let timer = template.content.cloneNode(true);
 		timer.querySelector(".timer").dataset["idx"] = idx;
 
+		let footer = timer.querySelector(".time-container");
+		let footerContent = timer.querySelector(".time-container").innerHTML;
+		footer.innerHTML = footerContent.replace("${uuid}", idx);
+
 		let title = `timer-${idx.substring(0,5)}`;
 
 		let form = timer.querySelector(".form");

@@ -18,11 +18,22 @@ module.exports = {
 			dark: palette.neutral[900],
 			light: palette.neutral[100]
 		},
-    extend: {
-      fontFamily: {
-        'sans': ['Muli', 'ui-sans-serif', 'system-ui'],
-        'body': ['"Nunito Sans"', 'ui-sans-serif', 'system-ui']
-      },
+		fontFamily: {
+      'sans': ['Muli', 'ui-sans-serif', 'system-ui'],
+      'body': ['"Nunito Sans"', 'ui-sans-serif', 'system-ui']
+    },
+    variants: {
+    	transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
+	    extend: {
+	      cursor: ['hover', 'focus'],
+	      borderWidth: ['hover', 'focus'],
+	      transitionProperty: {
+	      	'width': 'width',
+	      	'height': 'height'
+	      }
+	    }
+	  },
+	  extend: {
       fontSize: {
       	'xxs':  '0.5rem',
       	'10xl': '10rem',
@@ -66,19 +77,6 @@ module.exports = {
       	transparent: 'transparent'
       }
     },
-    variants: {
-	    extend: {
-	      cursor: ['hover', 'focus'],
-	      borderWidth: ['hover', 'focus'],
-	      transitionProperty: {
-	      	'width': 'width',
-	      	'height': 'height'
-	      }
-	    },
-	  },
-  },
-  variants: {
-  	transitionProperty: ['responsive', 'motion-safe', 'motion-reduce']
   },
   plugins: [],
 }

@@ -220,6 +220,10 @@ function buildTimer(idx) {
 		let timer = template.content.cloneNode(true);
 		timer.querySelector(".timer").dataset["idx"] = idx;
 
+		let footer = timer.querySelector(".time-container");
+		let footerContent = timer.querySelector(".time-container").innerHTML;
+		footer.innerHTML = footerContent.replace("${uuid}", idx);
+
 		let title = `timer-${idx.substring(0,5)}`;
 
 		let form = timer.querySelector(".form");
@@ -532,25 +536,23 @@ function updateOptions() {
 
 	Object.keys(OPTIONS).forEach(key => {
 		if(key !== 'seconds_display') {
-			if(OPTIONS[key]) {
-				document.querySelector(`[name="${key}"]`).setAttribute("checked", true);
-			} else {
-				document.querySelector(`[name="${key}"]`).removeAttribute("checked");
-			}
+			document.querySelector(`[name="${key}"]`).checked = OPTIONS[key];
+
 		} else {
 			document.querySelector("[name='seconds_display']").value = OPTIONS["seconds_display"];
+
 		}
 	});
 
-	if(!OPTIONS['show_seconds']) {
-		document.querySelector("[name='seconds_display']").style.display = 'none';
-		// document.querySelector(".seconds_display").style.display = 'none';
-		
-		document.querySelector("[name='sec_numbers']").setAttribute("checked", false);
+	if(OPTIONS['show_seconds']) {
+		document.querySelector("[name='seconds_display']").style.display = 'block';
+		document.querySelector("[for='sec_numbers']").style.display = 'block';
 
 	} else {
-		document.querySelector("[name='seconds_display']").style.display = 'block';
-		// document.querySelector(".seconds_display").style.display = 'block';
+		document.querySelector("[name='seconds_display']").style.display = 'none';
+		
+		document.querySelector("[name='sec_numbers']").checked = false;
+		document.querySelector("[for='sec_numbers']").style.display = 'none';
 
 	}
 

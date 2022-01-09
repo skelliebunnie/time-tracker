@@ -15,11 +15,11 @@
 <body class='bg-neutral-300 flex flex-col items-stretch h-screen md:max-h-screen font-body'>
 	<header class="text-center bg-neutral-900 text-light z-10">
 		<h1>Time Tracker</h1>
-		<ul class="flex max-w-5xl mx-auto my-6">
-			<li class="flex-0"><strong>Options:</strong></li>
+		<ul class="flex flex-wrap max-w-5xl mx-auto my-6">
+			<li class="flex-0 w-full"><h4 class="leading-relaxed">Options</h4></li>
 			<li class="flex-1 flex flex-row flex-wrap">
-				<label class="flex-auto" for="show_seconds"><input class="opt-input" type="checkbox" name="show_seconds" value="show_seconds"> Show Seconds</label>
-				<label class="flex-auto" for="sec_numbers"><input class="opt-input" type="checkbox" name="sec_numbers" value="sec_numbers"> Include Numbers</label>
+				<label class="flex-auto" for="show_seconds"><input class="opt-input" type="checkbox" name="show_seconds" value="show_seconds"> Show Seconds Counter</label>
+				<label class="flex-auto" for="sec_numbers"><input class="opt-input" type="checkbox" name="sec_numbers" value="sec_numbers"> As Numbers</label>
 				<label class="seconds_display flex-auto text-left w-full hidden" for="seconds_display">Display Style</label>
 				<select id="seconds_display" class="opt-input px-2 py-1 w-full mt-2 text-dark hidden" name="seconds_display">
 					<option value="none" selected>Seconds Display Style</option>
@@ -91,16 +91,16 @@
 	<!-- timer template -->
 	<template id="timerTemplate">
 		<div class="timer flex-1 bg-primary-300 p-0 m-3 text-dark text-center relative" data-idx="0">
-			<header class="flex flex-row items-center justify-around p-4">
+			<header class="relative flex flex-row items-center justify-around p-4">
+				<span class="refresh-timer flex-0 ml-3 cursor-pointer align-top has-tooltip tooltip-right" data-tooltip="Refresh this timer's UUID to save as a new time entry">
+					<i class="fad fa-sync-alt text-4xl text-tertiary-500 hover:text-tertiary-700 duration-500"></i>
+				</span>
 				<h3 class="flex-1">
 					<form class="form mb-0">
 						<input type="text" class="title-input text-center w-5/6 p-2 text-3xl leading-10 bg-primary-300 hover:bg-primary-200 active:bg-primary-200" name="title" value="${title}">
 					</form>
 				</h3>
-				<span class="refresh-timer absolute top-3 left-2 ml-3 cursor-pointer align-top hidden">
-					<i class="fad fa-sync-alt text-4xl text-tertiary-500 hover:text-tertiary-700 duration-500"></i>
-				</span>
-				<span class="remove-timer absolute top-3 right-2 mr-3 cursor-pointer align-top">
+				<span class="remove-timer flex-0 mr-3 cursor-pointer align-top has-tooltip tooltip-left" data-tooltip="Delete timer (does not remove associated time entry)">
 					<i class="fad fa-minus-square text-4xl text-accent-500 hover:text-accent-700 duration-500"></i>
 				</span>
 			</header>
@@ -108,10 +108,15 @@
 				<span class="play-pause inline-block m-4" data-playing="false"><i class="fad fa-play-circle text-9xl cursor-pointer"></i></span>
 			</main>
 			<footer class="time-container flex flex-row items-center justify-between bg-primary-400 p-4">
-				<p class="time flex-auto text-2xl text-center ml-20">00:00:00</p>
+				<span class="has-tooltip tooltip-top-right" data-tooltip="${uuid}">UUID</span>
+				<p class="time flex-auto text-2xl text-center">00:00:00</p>
 				<div class="inline-block flex-none">
-					<i class="fas fa-backspace text-xl align-middle cursor-pointer clear-time text-error-500 mx-3 disabled"></i>
-					<i class="fas fa-save text-xl align-middle cursor-pointer save-time text-success-500 mx-3 disabled"></i>
+					<span class="has-tooltip tooltip-top-left" data-tooltip="Reset timer counter. Does not reset time entry">
+						<i class="fas fa-backspace text-xl align-middle cursor-pointer clear-time text-error-500 mx-3 disabled"></i>
+					</span>
+					<span class="has-tooltip tooltip-top-left" data-tooltip="Save/update time entry with current title & time counter (based on timer UUID)">
+						<i class="fas fa-save text-xl align-middle cursor-pointer save-time text-success-500 mx-3 disabled"></i>
+					</span>
 				</div>
 			</footer>
 		</div>
