@@ -641,17 +641,13 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-bg-opacity: 1;
   background-color: rgb(69 63 68 / var(--tw-bg-opacity));
 }
-.bg-neutral-600 {
+.bg-secondary-500 {
   --tw-bg-opacity: 1;
-  background-color: rgb(122 112 120 / var(--tw-bg-opacity));
+  background-color: rgb(183 101 215 / var(--tw-bg-opacity));
 }
 .bg-tertiary-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(221 240 255 / var(--tw-bg-opacity));
-}
-.bg-secondary-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(183 101 215 / var(--tw-bg-opacity));
 }
 .bg-tertiary-600 {
   --tw-bg-opacity: 1;
@@ -788,6 +784,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-neutral-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(162 154 161 / var(--tw-bg-opacity));
+}
+.bg-neutral-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(122 112 120 / var(--tw-bg-opacity));
 }
 .bg-neutral-700 {
   --tw-bg-opacity: 1;
@@ -993,7 +993,8 @@ Ensure the default browser behavior of the `hidden` attribute.
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;700&display=swap");
 /* colors, when @apply doesn't work */
 :root {
-  --neutral-700: rgb(101, 93, 100); }
+  --neutral-700: rgb(101, 93, 100);
+  --neutral-800: rgb(69, 63, 68); }
 
 /* general HTML tags */
 a, .link{
@@ -1128,14 +1129,22 @@ h5, h6, .h5, .h6{
     bottom: 100%;
     margin-bottom: -3px;
     border: 10px solid transparent;
+    border-top-color: var(--neutral-700);
     display: none; }
   .has-tooltip.tooltip-visible:before, .has-tooltip.tooltip-visible:after, .has-tooltip:hover:before, .has-tooltip:hover:after {
     display: block; }
   .has-tooltip.tooltip-top:before, .has-tooltip.tooltip-top:after {
     bottom: 100%; }
   .has-tooltip.tooltip-top:before {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
     margin-bottom: 15px; }
   .has-tooltip.tooltip-top:after {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
+    border-top-color: var(--neutral-700);
     margin-bottom: -3px; }
   .has-tooltip.tooltip-bottom:before, .has-tooltip.tooltip-bottom:after {
     bottom: initial;
@@ -1154,39 +1163,39 @@ h5, h6, .h5, .h6{
   .has-tooltip.tooltip-top-left:before, .has-tooltip.tooltip-top-left:after, .has-tooltip.tooltip-top-right:before, .has-tooltip.tooltip-top-right:after {
     bottom: 100%; }
   .has-tooltip.tooltip-top-left:before {
-    right: 50%;
+    right: 25%;
     margin-bottom: 15px; }
   .has-tooltip.tooltip-top-left:after {
-    right: 75%;
+    right: 50%;
     margin-bottom: 3px;
-    border-right-color: var(--neutral-700); }
+    border-top-color: var(--neutral-700);
+    top: -15px; }
   .has-tooltip.tooltip-top-right:before {
-    left: 50%;
+    left: 25%;
     margin-bottom: 15px; }
   .has-tooltip.tooltip-top-right:after {
-    left: 75%;
+    left: 50%;
     margin-bottom: 3px;
-    border-left-color: var(--neutral-700); }
+    border-top-color: var(--neutral-700);
+    top: -15px; }
   .has-tooltip.tooltip-bottom-left:before, .has-tooltip.tooltip-bottom-left:after, .has-tooltip.tooltip-bottom-right:before, .has-tooltip.tooltip-bottom-right:after {
     top: 100%;
     bottom: initial; }
   .has-tooltip.tooltip-bottom-left:before {
-    right: 50%;
+    right: 25%;
     margin-top: 15px; }
   .has-tooltip.tooltip-bottom-left:after {
-    right: 75%;
-    margin-top: 3px;
+    right: 50%;
+    margin-top: -5px;
     border-top-color: transparent;
-    border-right-color: var(--neutral-700);
     border-bottom-color: var(--neutral-700); }
   .has-tooltip.tooltip-bottom-right:before {
-    left: 50%;
+    left: 25%;
     margin-top: 15px; }
   .has-tooltip.tooltip-bottom-right:after {
-    left: 75%;
-    margin-top: 3px;
+    left: 50%;
+    margin-top: -5px;
     border-top-color: transparent;
-    border-left-color: var(--neutral-700);
     border-bottom-color: var(--neutral-700); }
   .has-tooltip.tooltip-left:before, .has-tooltip.tooltip-left:after, .has-tooltip.tooltip-right:before, .has-tooltip.tooltip-right:after {
     left: initial;
@@ -1259,16 +1268,22 @@ h5, h6, .h5, .h6{
     transform: rotate(-90deg); }
 
 /* TABS */
-.tab.active{
+.tab{
+  --tw-bg-opacity: 1;
+  background-color: rgb(122 112 120 / var(--tw-bg-opacity)); }
+  .tab.active{
   --tw-text-opacity: 1;
   color: rgb(34 32 34 / var(--tw-text-opacity));
-  z-index: 2; }
-
-.tab:first-child.active {
-  box-shadow: 1px 0 2px -1px #5a5359; }
-
-.tab:not(:first-child).active {
-  box-shadow: -1px 0 2px -1px #5a5359; }
+    z-index: 2; }
+  .tab:first-child.active{
+  --tw-bg-opacity: 1;
+  background-color: rgb(192 186 191 / var(--tw-bg-opacity));
+    box-shadow: 1px 0 2px -1px var(--neutral-800); }
+  .tab:not(:first-child).active {
+    box-shadow: -1px 0 2px -1px var(--neutral-800), 1px 0 2px -1px var(--neutral-800); }
+  .tab:nth-child(2).active{
+  --tw-bg-opacity: 1;
+  background-color: rgb(221 240 255 / var(--tw-bg-opacity)); }
 
 .tab-content {
   z-index: 5;

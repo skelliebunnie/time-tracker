@@ -18,7 +18,7 @@
 	</header>
 	<main id="main" class="clock_left flex-auto grid grid-cols-1 items-stretch">
 		<!-- CLOCK -->
-		<article id="clock_wrapper" class="place-top md:place-left relative flex flex-col flex-1 text-dark text-center pb-4 justify-center items-center">
+		<article id="clock_wrapper" class="place-top md:place-left relative flex flex-col flex-1 text-dark text-center pb-4 justify-center">
 			<div id="options_wrapper" class="flex-0 z-50">
 				<h4 class="options-title relative small-caps p-4 bg-neutral-100 top-bar" data-open="false">Options <i class="fad fa-angle-down top-1 cursor-pointer text-accent-500 hover:text-accent-600 transition-colors transition-200 z-10"></i></h4>
 				<ul class="options_container flex flex-wrap mx-auto p-4 overflow-hidden origin-top scale-y-0 transition-transform bg-neutral-200 z-0">
@@ -59,9 +59,9 @@
 		<!-- TABS: TIMERS & TIME ENTRIES -->
 		<article id="tabbedContent" class="place-bottom md:place-right flex flex-col flex-1 items-start bg-neutral-800 text-light p-4">
 			<!-- TABS: NAV -->
-			<nav id="tabs" class="flex flex-0 flex-row flex-wrap justify-start items-stretch" data-inactive-color="bg-neutral-600">
-				<span class="tab flex-grow-1 py-2 px-4 active bg-neutral-400" data-content="timers_container" data-color="bg-neutral-400">Timers</span>
-				<span class="tab flex-grow-1 py-2 px-4 bg-neutral-600" data-content="time_entries" data-color="bg-tertiary-200">Time Entries</span>
+			<nav id="tabs" class="flex flex-0 flex-row flex-wrap justify-start items-stretch">
+				<span class="tab flex-grow-1 py-2 px-4 active" data-content="timers_container">Timers</span>
+				<span class="tab flex-grow-1 py-2 px-4" data-content="time_entries">Time Entries</span>
 			</nav>
 			<!-- TABS: CONTENT -->
 			<!-- timers -->
@@ -96,7 +96,7 @@
 	<template id="timerTemplate">
 		<div class="timer flex-1 bg-primary-300 p-0 m-3 text-dark text-center relative" data-idx="0">
 			<header class="relative flex flex-row items-center justify-around p-4">
-				<span class="refresh-timer flex-0 ml-3 cursor-pointer align-top has-tooltip tooltip-right" data-tooltip="Refresh this timer's UUID to save as a new time entry">
+				<span class="refresh-timer flex-0 ml-3 cursor-pointer align-top has-tooltip tooltip-top-right" data-tooltip="Refresh this timer's UUID to save as a new time entry">
 					<i class="fad fa-sync-alt text-4xl text-tertiary-500 hover:text-tertiary-700 duration-500"></i>
 				</span>
 				<h3 class="flex-1">
@@ -104,7 +104,7 @@
 						<input type="text" class="title-input text-center w-5/6 p-2 text-3xl leading-10 bg-primary-300 hover:bg-primary-200 active:bg-primary-200" name="title" value="${title}">
 					</form>
 				</h3>
-				<span class="remove-timer flex-0 mr-3 cursor-pointer align-top has-tooltip tooltip-left" data-tooltip="Delete timer (does not remove associated time entry)">
+				<span class="remove-timer flex-0 mr-3 cursor-pointer align-top has-tooltip tooltip-top-left" data-tooltip="Delete timer (does not remove associated time entry)">
 					<i class="fad fa-minus-square text-4xl text-accent-500 hover:text-accent-700 duration-500"></i>
 				</span>
 			</header>

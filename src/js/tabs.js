@@ -2,7 +2,6 @@
  * TABS
  */
 const tabsNav = document.querySelector("#tabs");
-const inactiveColor = tabsNav.dataset["inactiveColor"];
 
 let tabTarget = "timers_container";
 if(localStorage.getItem('sktt_tab')) {
@@ -20,15 +19,12 @@ function handleTabs(t) {
 		}
 	});
 	const target = tab.dataset["content"];
-	const activeColor = tab.dataset["color"];
 
-	tab.classList.add("active", activeColor);
-	tab.classList.remove(inactiveColor);
+	tab.classList.add("active");
 
 	let siblings = getSiblings(tab);
 	siblings.forEach(sib => {
-		sib.classList.remove("active", activeColor);
-		sib.classList.add(inactiveColor);
+		sib.classList.remove("active");
 	});
 
 	document.querySelectorAll(".tab-content").forEach(tabContent => {

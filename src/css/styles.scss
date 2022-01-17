@@ -3,6 +3,7 @@
 /* colors, when @apply doesn't work */
 :root {
 	--neutral-700: rgb(101, 93, 100);
+	--neutral-800: rgb(69, 63, 68);
 }
 
 /* general HTML tags */
@@ -73,7 +74,7 @@ h5, h6,
 
 		// position on top
 		bottom: 100%;
-		margin-bottom: 15px;		
+		margin-bottom: 15px;
 
 		min-width: 300px;
 
@@ -96,6 +97,7 @@ h5, h6,
 		margin-bottom: -3px;
 		
 		border: 10px solid transparent;
+		border-top-color: var(--neutral-700);
 
 		display: none;
 	}
@@ -109,8 +111,19 @@ h5, h6,
 
 	&.tooltip-top {
 		&:before, &:after { bottom: 100%; }
-		&:before { margin-bottom: 15px; }
-		&:after { margin-bottom: -3px; }
+		&:before {
+			left: 50%;
+			transform: translateX(-50%);
+			bottom: 100%;
+			margin-bottom: 15px;
+		}
+		&:after {
+			left: 50%;
+			transform: translateX(-50%);
+			bottom: 100%;
+			border-top-color: var(--neutral-700);
+			margin-bottom: -3px;
+		}
 	}
 
 	&.tooltip-bottom {
@@ -149,25 +162,27 @@ h5, h6,
 
 	&.tooltip-top-left {
 		&:before {
-			right: 50%;
+			right: 25%;
 			margin-bottom: 15px;
 		}
 		&:after {
-			right: 75%;
+			right: 50%;
 			margin-bottom: 3px;
-			border-right-color: var(--neutral-700);
+			border-top-color: var(--neutral-700);
+			top: -15px;
 		}
 	}
 
 	&.tooltip-top-right {
 		&:before {
-			left: 50%;
+			left: 25%;
 			margin-bottom: 15px;
 		}
 		&:after {
-			left: 75%;
+			left: 50%;
 			margin-bottom: 3px;
-			border-left-color: var(--neutral-700);
+			border-top-color: var(--neutral-700);
+			top: -15px;
 		}
 	}
 
@@ -181,28 +196,26 @@ h5, h6,
 
 	&.tooltip-bottom-left {
 		&:before {
-			right: 50%;
+			right: 25%;
 			margin-top: 15px;
 		}
 		&:after {
-			right: 75%;
-			margin-top: 3px;
+			right: 50%;
+			margin-top: -5px;
 			border-top-color: transparent;
-			border-right-color: var(--neutral-700);
 			border-bottom-color: var(--neutral-700);
 		}
 	}
 
 	&.tooltip-bottom-right {
 		&:before {
-			left: 50%;
+			left: 25%;
 			margin-top: 15px;
 		}
 		&:after {
-			left: 75%;
-			margin-top: 3px;
+			left: 50%;
+			margin-top: -5px;
 			border-top-color: transparent;
-			border-left-color: var(--neutral-700);
 			border-bottom-color: var(--neutral-700);
 		}
 	}
@@ -294,16 +307,23 @@ h5, h6,
 
 /* TABS */
 .tab {
+	@apply bg-neutral-600;
+
 	&.active {
 		@apply text-neutral-900;
 		z-index: 2;
 	}
 
 	&:first-child.active {
-		box-shadow: 1px 0 2px -1px #5a5359;
+		@apply bg-neutral-400;
+		box-shadow: 1px 0 2px -1px var(--neutral-800);
 	}
 	&:not(:first-child).active {
-		box-shadow: -1px 0 2px -1px #5a5359;
+		box-shadow: -1px 0 2px -1px var(--neutral-800), 1px 0 2px -1px var(--neutral-800);
+	}
+
+	&:nth-child(2).active {
+		@apply bg-tertiary-200;
 	}
 }
 
