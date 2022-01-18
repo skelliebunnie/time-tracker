@@ -5,7 +5,8 @@ let palette = require('./utils/palette');
 module.exports = {
 	content: [
 		'./src/*.html',
-		'./src/css/*.scss'
+		'./src/css/*.scss',
+		'./src/js/*.js'
 	],
   darkMode: 'class', // or 'media' or false
   theme: { 
@@ -19,8 +20,9 @@ module.exports = {
 			light: palette.neutral[100]
 		},
 		fontFamily: {
-      'sans': ['Muli', 'ui-sans-serif', 'system-ui'],
-      'body': ['"Nunito Sans"', 'ui-sans-serif', 'system-ui']
+			sans: ['"Spartan"', 'sans-serif'],
+			cursive: ['"Comfortaa"', 'cursive'],
+      mono: ['"Anonymous Pro"', 'monospace']
     },
     variants: {
     	transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],

@@ -344,6 +344,14 @@ function buildTimer(idx) {
 
 			localTimers("save");
 			idx = newId;
+
+			showToast({
+				position: "bl",
+				type: "success",
+				title: "Timer UUID refreshed!",
+				message: `New UUID (<span class='font-mono'>${idx}</span>) assigned to timer.`,
+				fadeDelay: 3000
+			});
 		});
 
 		timersContainer.append(timer);

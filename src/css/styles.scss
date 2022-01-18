@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;700&display=swap');
-
 /* colors, when @apply doesn't work */
 :root {
 	--neutral-700: rgb(101, 93, 100);
@@ -7,6 +5,15 @@
 }
 
 /* general HTML tags */
+html { font-size: 14px; }
+
+body {
+	@apply font-sans;
+	font-weight: 400;
+	font-size: 1rem;
+	position: relative;
+}
+
 a, .link {
 	@apply text-accent-600 hover:text-accent-700;
 
@@ -15,29 +22,39 @@ a, .link {
 	}
 }
 
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+	@apply font-cursive;
+	font-weight: 700;
+}
+
 h1, .h1 {
-	@apply text-4xl md:text-5xl lg:text-6xl font-bold;
+	@apply text-4xl md:text-5xl lg:text-6xl;
 	@apply leading-relaxed;
 	font-variant: small-caps;
 }
 
 h2, .h2 {
-	@apply text-4xl md:text-5xl font-bold;
+	@apply text-4xl md:text-5xl;
 	@apply leading-relaxed;
 	font-variant: small-caps;
 }
 
 h3, .h3 {
-	@apply text-3xl md:text-4xl font-bold;
+	@apply text-3xl md:text-4xl;
 	@apply leading-relaxed;
 }
-h4, h5, h6,
-.h4, .h5, .h6 {
+h4, .h4 {
 	@apply text-2xl md:text-4xl;
 }
 
-h5, h6,
-.h5, .h6 { @apply italic; }
+h5, .h5 {
+	@apply text-2xl md:text-3xl;
+}
+
+h6, .h6 {
+	@apply text-2xl;
+}
 
 /* general classes */
 .disabled {
@@ -58,10 +75,19 @@ h5, h6,
 	z-index: 10;
 }
 
+.fas, .far, .fad, .fal, .fab {
+	transition: color 0.3s ease-out;
+}
+
 /* TOOLTIPS */
 // https://blog.logrocket.com/creating-beautiful-tooltips-with-only-css/
 .has-tooltip {
 	position: relative;
+
+	&.font-mono {
+		@apply text-sm;
+		letter-spacing: 1.7;
+	}
 
 	&:before {
 		@apply bg-neutral-700 text-light text-xs p-2 absolute inline-block;
@@ -253,6 +279,90 @@ h5, h6,
 	}
 }
 
+/* Toast */
+.toast {
+	position: absolute;
+	opacity: 0;
+	transition: all 0.8s ease-out;
+	z-index: 9999;
+
+	& h4 {
+		margin-left: 0;
+		padding-left: 0;
+	}
+
+	& p {
+		margin-left: 0.25rem;
+		padding-left: 0;
+		line-height: 2;
+	}
+
+	& .close {
+		@apply cursor-pointer text-neutral-600 hover:text-neutral-800;
+	}
+
+	&.active {
+		opacity: 1;
+		transform: translateY(0);
+		transition: all 0.8s ease-out;
+	}
+
+	&.info {
+		@apply bg-info-200 border-l-8 border-info-600;
+	}
+
+	&.success {
+		@apply bg-success-200 border-l-8 border-success-600;
+	}
+
+	&.warn {
+		@apply bg-warn-200 border-l-8 border-warn-600;
+	}
+
+	&.error {
+		@apply bg-error-200 border-l-8 border-error-600;
+	}
+
+	&.bl {
+		@apply bottom-16 left-0;
+		transform: translateX(-200%);
+		&.active { transform: translateX(0); }
+	}
+	&.tl {
+		@apply top-4 left-0;
+		transform: translateX(-200%);
+		&.active { transform: translateX(0); }
+	}
+	&.br {
+		@apply bottom-16 right-0;
+		transform: translateX(200%);
+		&.active { transform: translateX(0); }
+	}
+	&.tr {
+		@apply top-4 right-0;
+		transform: translateX(200%);
+		&.active { transform: translateX(0); }
+	}
+	&.bm {
+		@apply bottom-16;
+		left: 50%;
+		transform: translate(-50%, 200%);
+		&.active { transform: translate(-50%, 0); }
+	}
+	&.tm {
+		@apply top-4;
+		left: 50%;
+		transform: translate(-50%, -200%);
+		&.active { transform: translate(-50%, 0); }
+	}
+	&.mm {
+		left: 50%;
+		top: 35%;
+		transform: translate(-50%, -200%);
+		&.active { transform: translate(-50%, 0); }
+	}
+}
+
 /* MAIN CONTENT LAYOUT CLASSES */
 .place-top,
 \.md\:place-left {
@@ -349,9 +459,10 @@ h5, h6,
 /* TIME ENTRIES */
 #time_entries table tr {
 	display: grid;
-	grid-template-columns: 1.25fr 1.25fr 2fr 2fr .5fr;
+	grid-template-columns: 1.25fr 1.25fr 2fr 2fr .5fr .5fr;
 	align-items: center;
 	justify-content: center;
+	font-size: 1rem;
 
 	&:nth-child(even) {
 		@apply bg-tertiary-300;
@@ -364,4 +475,12 @@ h5, h6,
 
 	& th { @apply p-2 text-lg; }
 	& td { @apply p-1; }
+}
+
+.load-time-entry {
+	@apply text-4xl text-success-600 hover:text-success-900 hover:cursor-pointer;
+}
+
+.remove-time-entry {
+	@apply text-4xl text-error-600 hover:text-error-900 hover:cursor-pointer;
 }

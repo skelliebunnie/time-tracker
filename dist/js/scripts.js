@@ -71,6 +71,47 @@ function getTimer(idx) {
 
 	return res;
 }
+function showToast(opts) {
+	options = {
+		type: 'info',
+		fadeDelay: 5000,
+		position: 'bl', // bl: bottom-left, br: bottom-right, etc.
+		title: "Toast Title",
+		message: "This is a toast notification",
+		...opts
+	}
+	let toastId = uuidv4();
+
+	let template = document.querySelector("#toastTemplate");
+	let toastClone = template.content.cloneNode(true);
+	let toast = toastClone.querySelector(".toast");
+	toast.setAttribute("id", `toast-${toastId}`);
+	toast.querySelector(".content").innerHTML = options.title !== '' ? `<h6>${options.title}</h6>` : '';
+	toast.querySelector(".content").innerHTML += `<p>${options.message}</p>`;
+
+
+
+	toast.querySelector(".close").addEventListener("click", function() {
+		toast.classList.remove("active");
+
+		setTimeout(() => { toast.remove() }, 800);
+	});
+
+	document.querySelector("body").append(toast);
+
+	toast.classList.add(options.position, options.type);
+
+	setTimeout(() => {
+		toast.classList.add("active");
+	}, 200)
+
+	if(options.fadeDelay > 0) {
+		setTimeout(() => {
+			toast.classList.remove("active");
+			setTimeout(() => { toast.remove() }, 800);
+		}, options.fadeDelay);
+	}
+}
 /**
  * TIMERS
  * idx: {
@@ -417,6 +458,14 @@ function buildTimer(idx) {
 
 			localTimers("save");
 			idx = newId;
+
+			showToast({
+				position: "bl",
+				type: "success",
+				title: "Timer UUID refreshed!",
+				message: `New UUID (<span class='font-mono'>${idx}</span>) assigned to timer.`,
+				fadeDelay: 3000
+			});
 		});
 
 		timersContainer.append(timer);
@@ -824,6 +873,8 @@ function updateTimeEntries() {
 	storedTimeEntries = localTimeEntries("get");
 
 	if(storedTimeEntries.count > 0) {
+		TIME_ENTRIES = storedTimeEntries;
+
 		timeEntries.innerHTML = "";
 		
 		Object.keys(storedTimeEntries.docs).forEach(key => {
@@ -846,15 +897,49 @@ function updateTimeEntries() {
 				row.append(td);
 			});
 
+			let loadTd = document.createElement("td");
+			let loadBtn = document.createElement("i");
+			loadBtn.classList.add("load-time-entry", "fas", "fa-recycle");
+
+			loadBtn.addEventListener("click", function() {
+				let r = document.querySelector(`#te-${key}`);
+				let rowId = r.getAttribute("id").substring(3);
+
+				if(!TIMERS.docs[rowId]) {
+					TIMERS.docs[rowId] = {
+						...TIME_ENTRIES.docs[rowId]
+					};
+
+					TIMERS.count = TIMERS.count + 1;
+					
+					localTimers("save");
+					buildTimer(rowId);
+					handleTabs('timers');
+
+				} else {
+					showToast({
+						position: "mm",
+						title: "Timer Already Exists!",
+						message: `A timer with the UUID <span class='font-mono'>${rowId}</span> already exists! If that timer should be for a different entry, please refresh the UUID for the timer and save it as a new time entry.`,
+						type: "error"
+					});
+
+				}
+
+			});
+
+			loadTd.append(loadBtn);
+			row.append(loadTd);
+
 			let removeTd = document.createElement("td");
 			let removeBtn = document.createElement("i");
-			removeBtn.classList.add("remove-time-entry", "fad", "fa-minus-square", "text-4xl", "text-accent-500", "hover:text-accent-700");
+			removeBtn.classList.add("remove-time-entry", "fad", "fa-minus-square", "fa-swap-opacity");
 
 			removeBtn.addEventListener("click", function() {
 				let r = document.querySelector(`#te-${key}`);
 				r.remove();
 
-				delete TIME_ENTRIES[key];
+				delete TIME_ENTRIES.docs[key];
 				TIME_ENTRIES.count = TIME_ENTRIES.count > 0 ? TIME_ENTRIES.count - 1 : 0;
 				localTimeEntries("save");
 			});

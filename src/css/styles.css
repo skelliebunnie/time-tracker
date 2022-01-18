@@ -1,36 +1,50 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;700&display=swap");
 /* colors, when @apply doesn't work */
 :root {
   --neutral-700: rgb(101, 93, 100);
   --neutral-800: rgb(69, 63, 68); }
 
 /* general HTML tags */
+html {
+  font-size: 14px; }
+
+body {
+  @apply font-sans;
+  font-weight: 400;
+  font-size: 1rem;
+  position: relative; }
+
 a, .link {
   @apply text-accent-600 hover:text-accent-700; }
   .text-light a, .text-light .link {
     @apply text-accent-400 hover:text-accent-500; }
 
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  @apply font-cursive;
+  font-weight: 700; }
+
 h1, .h1 {
-  @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+  @apply text-4xl md:text-5xl lg:text-6xl;
   @apply leading-relaxed;
   font-variant: small-caps; }
 
 h2, .h2 {
-  @apply text-4xl md:text-5xl font-bold;
+  @apply text-4xl md:text-5xl;
   @apply leading-relaxed;
   font-variant: small-caps; }
 
 h3, .h3 {
-  @apply text-3xl md:text-4xl font-bold;
+  @apply text-3xl md:text-4xl;
   @apply leading-relaxed; }
 
-h4, h5, h6,
-.h4, .h5, .h6 {
+h4, .h4 {
   @apply text-2xl md:text-4xl; }
 
-h5, h6,
-.h5, .h6 {
-  @apply italic; }
+h5, .h5 {
+  @apply text-2xl md:text-3xl; }
+
+h6, .h6 {
+  @apply text-2xl; }
 
 /* general classes */
 .disabled {
@@ -48,9 +62,15 @@ h5, h6,
   box-shadow: 0 3px 5px 0 black;
   z-index: 10; }
 
+.fas, .far, .fad, .fal, .fab {
+  transition: color 0.3s ease-out; }
+
 /* TOOLTIPS */
 .has-tooltip {
   position: relative; }
+  .has-tooltip.font-mono {
+    @apply text-sm;
+    letter-spacing: 1.7; }
   .has-tooltip:before {
     @apply bg-neutral-700 text-light text-xs p-2 absolute inline-block;
     content: attr(data-tooltip);
@@ -161,6 +181,72 @@ h5, h6,
     border-top-color: transparent;
     border-left-color: var(--neutral-700); }
 
+/* Toast */
+.toast {
+  position: absolute;
+  opacity: 0;
+  transition: all 0.8s ease-out;
+  z-index: 9999; }
+  .toast h4 {
+    margin-left: 0;
+    padding-left: 0; }
+  .toast p {
+    margin-left: 0.25rem;
+    padding-left: 0;
+    line-height: 2; }
+  .toast .close {
+    @apply cursor-pointer text-neutral-600 hover:text-neutral-800; }
+  .toast.active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.8s ease-out; }
+  .toast.info {
+    @apply bg-info-200 border-l-8 border-info-600; }
+  .toast.success {
+    @apply bg-success-200 border-l-8 border-success-600; }
+  .toast.warn {
+    @apply bg-warn-200 border-l-8 border-warn-600; }
+  .toast.error {
+    @apply bg-error-200 border-l-8 border-error-600; }
+  .toast.bl {
+    @apply bottom-16 left-0;
+    transform: translateX(-200%); }
+    .toast.bl.active {
+      transform: translateX(0); }
+  .toast.tl {
+    @apply top-4 left-0;
+    transform: translateX(-200%); }
+    .toast.tl.active {
+      transform: translateX(0); }
+  .toast.br {
+    @apply bottom-16 right-0;
+    transform: translateX(200%); }
+    .toast.br.active {
+      transform: translateX(0); }
+  .toast.tr {
+    @apply top-4 right-0;
+    transform: translateX(200%); }
+    .toast.tr.active {
+      transform: translateX(0); }
+  .toast.bm {
+    @apply bottom-16;
+    left: 50%;
+    transform: translate(-50%, 200%); }
+    .toast.bm.active {
+      transform: translate(-50%, 0); }
+  .toast.tm {
+    @apply top-4;
+    left: 50%;
+    transform: translate(-50%, -200%); }
+    .toast.tm.active {
+      transform: translate(-50%, 0); }
+  .toast.mm {
+    left: 50%;
+    top: 35%;
+    transform: translate(-50%, -200%); }
+    .toast.mm.active {
+      transform: translate(-50%, 0); }
+
 /* MAIN CONTENT LAYOUT CLASSES */
 .place-top,
 \.md\:place-left {
@@ -232,9 +318,10 @@ h5, h6,
 /* TIME ENTRIES */
 #time_entries table tr {
   display: grid;
-  grid-template-columns: 1.25fr 1.25fr 2fr 2fr .5fr;
+  grid-template-columns: 1.25fr 1.25fr 2fr 2fr .5fr .5fr;
   align-items: center;
-  justify-content: center; }
+  justify-content: center;
+  font-size: 1rem; }
   #time_entries table tr:nth-child(even) {
     @apply bg-tertiary-300; }
   #time_entries table tr th,
@@ -244,3 +331,9 @@ h5, h6,
     @apply p-2 text-lg; }
   #time_entries table tr td {
     @apply p-1; }
+
+.load-time-entry {
+  @apply text-4xl text-success-600 hover:text-success-900 hover:cursor-pointer; }
+
+.remove-time-entry {
+  @apply text-4xl text-error-600 hover:text-error-900 hover:cursor-pointer; }
