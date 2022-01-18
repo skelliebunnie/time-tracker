@@ -324,23 +324,26 @@ function buildTimer(idx) {
 		// this is so we can re-use the same timer for multiple entries
 		// without having to create a new timer & delete the old one
 		refreshTimerBtn.addEventListener("click", function() {
-// 			let newId = uuidv4();
-// 			TIMERS.docs[newId] = {
-// 				...TIMERS.docs[idx],
-// 				interval: null,
-// 				start: dayjs()
-// 			}
-// 			console.log(newId);
-// 
-// 			delete(TIMERS.docs[idx]);
-// 
-// 			document.querySelectorAll(".timer").forEach(timer => {
-// 				if(timer.dataset["idx"] === idx) {
-// 					timer.setAttribute("data-idx", newId);
-// 				}
-// 			});
-// 
-// 			localTimers("save");
+			let newId = uuidv4();
+			TIMERS.docs[newId] = {
+				...TIMERS.docs[idx],
+				interval: null,
+				title: `timer-${newId.substring(0,5)}`
+			}
+
+			delete(TIMERS.docs[idx]);
+
+			document.querySelectorAll(".timer").forEach(timer => {
+				if(timer.dataset["idx"] === idx) {
+					timer.setAttribute("data-idx", newId);
+
+					timer.querySelector(".title-input").value = `timer-${newId.substring(0,5)}`;
+					timer.querySelector(".time-container > span:first-child").setAttribute("data-tooltip", newId);
+				}
+			});
+
+			localTimers("save");
+			idx = newId;
 		});
 
 		timersContainer.append(timer);
